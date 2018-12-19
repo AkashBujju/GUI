@@ -20,7 +20,7 @@ const int scr_width = 1024, scr_height = 768;
 int mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
-Button btn;
+Button btn, btn_2;
 
 int main()
 {
@@ -31,9 +31,17 @@ int main()
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	btn.init("OpenGL and C++", scr_width, scr_height, "Consolas.ttf", 30);
+	btn_2.init("Button is working", scr_width, scr_height, "Consolas.ttf", 20);
 
 	btn.set_x(0.3f, scr_width);
 	btn.set_y(0.3f, scr_height);
+	btn.rect.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	btn.text_color = glm::vec3(0.5f, 0.5f, 0.5f);
+
+	btn_2.set_x(-0.5f, scr_width);
+	btn_2.set_y(-0.2f, scr_height);
+	btn_2.rect.color = glm::vec4(0.5, 0.8f, 0.1f, 1.0f);
+	btn_2.text_color = glm::vec3(0.1f, 0.1f, 0.1f);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -62,13 +70,17 @@ void update()
 
 	if(btn.rect.is_on(norm_x, norm_y) && mouse_clicked)
 		btn.rect.push();
+	else if(btn_2.rect.is_on(norm_x, norm_y) && mouse_clicked)
+		btn_2.rect.push();
 
 	btn.update();
+	btn_2.update();
 }
 
 void draw()
 {
 	btn.draw();
+	btn_2.draw();
 }
 
 void processInput(GLFWwindow *window)

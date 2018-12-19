@@ -22,6 +22,7 @@ struct Button
 
 	public:
 		Rect rect;
+		glm::vec3 text_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		void update();
 		void draw();
@@ -45,7 +46,7 @@ void Button::set_y(float y, int scr_height)
 void Button::draw()
 {
 	rect.draw();
-	font.render_text(text, text_pos_x, text_pos_y, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+	font.render_text(text, text_pos_x, text_pos_y, 1.0f, text_color);
 }
 
 void Button::set_text_pos_x(float x, int scr_width)
@@ -102,8 +103,10 @@ void Button::init(std::string text, int scr_width, int scr_height, const char* f
 	// rect default props
 	rect.init();
 	rect.color = glm::vec4(0.7f, 0.0f, 0.0f, 1.0f);
-	rect.x_scale = 0.5f;
-	rect.y_scale = 0.1f;
+	rect.y_scale = 0.08f;
+
+	float norm_w = font.get_width(text) / (float)scr_width;
+	rect.x_scale = norm_w + 0.04f;
 
 	set_text_pos_x(0.0, scr_width);
 	set_text_pos_y(0.0, scr_height);
