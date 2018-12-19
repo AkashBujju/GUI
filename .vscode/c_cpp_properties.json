@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Users\\Akash\\Documents\\Libraries\\glfw3\\include",
+                "C:\\Users\\Akash\\Documents\\Libraries\\glad\\include",
+                "C:\\Users\\Akash\\Documents\\Programming\\OpenGL\\Include",
+                "C:\\Users\\Akash\\Documents\\Libraries",
+                "C:\\Users\\Akash\\Documents\\Libraries\\freetype\\include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\MinGW\\bin\\gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
