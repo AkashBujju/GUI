@@ -41,6 +41,7 @@ struct Font {
     void init_font(std::string fname, unsigned int _sz);
     void render_text(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
     unsigned int get_width(std::string tx);
+	unsigned int Font::get_height(std::string tx);
     ~Font();
 };
 
@@ -60,6 +61,19 @@ unsigned int Font::get_width(std::string tx)
     }
 
     return wi;
+}
+
+unsigned int Font::get_height(std::string tx)
+{
+    unsigned int h = 0;
+    for (unsigned int i = 0; i < tx.size(); i++)
+    {
+        Character ch = characters[tx[i]];
+		  if(ch.Size.y > h)
+			  h = ch.Size.y;
+    }
+
+    return h;
 }
 
 void Font::render_text(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
