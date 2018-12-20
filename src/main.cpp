@@ -17,7 +17,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void update();
 void draw();
 
-const int scr_width = 1024, scr_height = 768;
+const int scr_width = 600, scr_height = 600;
 int mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
@@ -40,8 +40,9 @@ int main()
 	btn.rect.color = glm::vec4(0.2f, 0.5f, 0.2f, 1.0f);
 	btn.text_color = glm::vec3(0.5f, 0.8f, 0.3f);
 
-	circle.init(0.0f, 0.0f, 0.1f, 1.0f);
-	circle.color = glm::vec3(0.2f, 0.5f, 0.6f);
+	circle.init(0.0f, 0.0f, 0.2f, 1.0f);
+	circle.inner_color = glm::vec3(0.2f, 0.5f, 0.6f);
+	circle.fill_inner = false;
 
 	while (!glfwWindowShouldClose(window))
 	{
