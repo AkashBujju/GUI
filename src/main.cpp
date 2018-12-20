@@ -10,7 +10,7 @@
 #include <button.h>
 #include <utils.h>
 
-void processInput(GLFWwindow *window);
+void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void update();
@@ -20,7 +20,7 @@ const int scr_width = 1024, scr_height = 768;
 int mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
-Button btn, btn_2;
+Button btn;
 
 int main()
 {
@@ -29,26 +29,25 @@ int main()
 	init_glad();
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
+	glfwSetKeyCallback(window, key_callback);
 
-	btn.init("OpenGL and C++", scr_width, scr_height, "Consolas.ttf", 30);
-	btn_2.init("Button is working", scr_width, scr_height, "Consolas.ttf", 20);
+	btn.init("1", scr_width, scr_height, "Consolas.ttf", 30);
 
 	btn.set_x(0.3f, scr_width);
 	btn.set_y(0.3f, scr_height);
-	btn.rect.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	btn.text_color = glm::vec3(0.5f, 0.5f, 0.5f);
-
-	btn_2.set_x(-0.5f, scr_width);
-	btn_2.set_y(-0.2f, scr_height);
-	btn_2.rect.color = glm::vec4(0.5, 0.8f, 0.1f, 1.0f);
-	btn_2.text_color = glm::vec3(0.1f, 0.1f, 0.1f);
+	btn.rect.color = glm::vec4(0.2f, 0.5f, 0.2f, 1.0f);
+	btn.text_color = glm::vec3(0.5f, 0.8f, 0.3f);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		mouse_clicked = false;
 
 		glfwPollEvents();
-		processInput(window);
+
+		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		if(state == GLFW_PRESS)
+			std::cout << "Pressed" << std::endl;
 
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -70,23 +69,23 @@ void update()
 
 	if(btn.rect.is_on(norm_x, norm_y) && mouse_clicked)
 		btn.rect.push();
-	else if(btn_2.rect.is_on(norm_x, norm_y) && mouse_clicked)
-		btn_2.rect.push();
 
 	btn.update();
-	btn_2.update();
+}
+
+void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
+{
+	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(win, true);
+	else if(key == GLFW_KEY_A && action == GLFW_REPEAT)
+	{
+		std::cout << "A" << std::endl;
+	}
 }
 
 void draw()
 {
 	btn.draw();
-	btn_2.draw();
-}
-
-void processInput(GLFWwindow *window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
