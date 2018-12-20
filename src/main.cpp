@@ -8,6 +8,7 @@
 #include <shader.h>
 #include <init.h>
 #include <button.h>
+#include <circle.h>
 #include <utils.h>
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods);
@@ -21,6 +22,7 @@ int mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
 Button btn;
+Circle circle;
 
 int main()
 {
@@ -33,16 +35,17 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 
 	btn.init("1", scr_width, scr_height, "Consolas.ttf", 30);
-
 	btn.set_x(0.3f, scr_width);
 	btn.set_y(0.3f, scr_height);
 	btn.rect.color = glm::vec4(0.2f, 0.5f, 0.2f, 1.0f);
 	btn.text_color = glm::vec3(0.5f, 0.8f, 0.3f);
 
+	circle.init(0.0f, 0.0f, 0.1f, 1.0f);
+	circle.color = glm::vec3(0.2f, 0.5f, 0.6f);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		mouse_clicked = false;
-
 		glfwPollEvents();
 
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -86,6 +89,7 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 void draw()
 {
 	btn.draw();
+	circle.draw();
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
