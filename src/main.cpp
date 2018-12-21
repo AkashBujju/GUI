@@ -38,8 +38,8 @@ int main()
 	d.add_item("Hello");
 	d.add_item("Tomato");
 	d.add_item("Exit");
-	// d.add_item("Eggs");
-	// d.add_item("Onion");
+	d.add_item("Eggs");
+	d.add_item("Onion");
 
 	while (!glfwWindowShouldClose(window))
 	{

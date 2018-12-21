@@ -12,28 +12,41 @@
 
 struct DropDown
 {
-	Rect panel;
-	Button btn_1;
-	BorderRect brect_1;
-
 	glm::vec3 up_left;
 	glm::vec3 current_add_pos;
 
+	Rect panel;
+	BorderRect panel_border;
 	std::vector<Button*> buttons;
 	std::vector<BorderRect*> b_rects;
 
 	void init(float x, float y);
+	void add_item(std::string text);
 	void draw();
 
-	void add_item(std::string text);
+	~DropDown();
 };
+
+DropDown::~DropDown()
+{
+	for(unsigned int i = 0; i < buttons.size(); i++)
+	{
+		delete buttons[i];
+		delete b_rects[i];
+	}
+}
 
 void DropDown::init(float x, float y)
 {
 	panel.init();
-	panel.color = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	panel.color = glm::vec4(0.2f, 0.3f, 0.2f, 1.0f);
 	panel.pos.x = x;
 	panel.pos.y = y;
+
+	panel_border.init();
+	panel_border.color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
+	panel_border.pos.x = panel.pos.x - 0.03f;
+	panel_border.pos.y = panel.pos.x + 0.03f;
 
 	up_left = glm::vec3(panel.pos.x - panel.x_scale + 0.04f, panel.pos.y + panel.y_scale - 0.04f, 0.0f);
 
@@ -50,8 +63,9 @@ void DropDown::add_item(std::string text)
 	BorderRect *tmp_brect = new BorderRect;
 	tmp_brect->init();
 	tmp_brect->pos = tmp_btn->rect.pos;
-	tmp_brect->x_scale = tmp_btn->rect.x_scale + 0.01f;
-	tmp_brect->y_scale = tmp_btn->rect.y_scale + 0.01f;
+	tmp_brect->x_scale = tmp_btn->rect.x_scale + 0.005f;
+	tmp_brect->y_scale = tmp_btn->rect.y_scale + 0.005f;
+	tmp_brect->color = glm::vec4(0.6f, 0.6f, 0.0f, 1.0f);
 
 	buttons.push_back(tmp_btn);
 	b_rects.push_back(tmp_brect);
@@ -63,12 +77,17 @@ void DropDown::add_item(std::string text)
 	middle_y -= (b_rects[0]->y_scale * b_rects.size() * 1.15f);
 	panel.pos.y = middle_y;
 	panel.y_scale = (b_rects[0]->y_scale * b_rects.size() * 1.25f);
+
+	panel_border.pos.x = panel.pos.x;
+	panel_border.pos.y = panel.pos.y;
+	panel_border.x_scale = panel.x_scale * 1.01f;
+	panel_border.y_scale = panel.y_scale * 1.01f;
 }
 
 void DropDown::draw()
 {
 	panel.draw();
-
+	panel_border.draw();
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
 		buttons[i]->draw();
