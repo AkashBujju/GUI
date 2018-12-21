@@ -11,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 
-struct Circle {
+struct CheckBox {
 	float org_x = 0;
 	float org_y = 0;
 	float radius = 0.5f;
@@ -19,7 +19,6 @@ struct Circle {
 
 	glm::vec3 inner_color;
 	glm::vec3 outer_color;
-
 	bool fill_inner = true;
 
 	unsigned int vao, vbo;
@@ -33,7 +32,7 @@ struct Circle {
 	void draw();
 };
 
-void Circle::init(float org_x, float org_y, float radius, float inc_angle)
+void CheckBox::init(float org_x, float org_y, float radius, float inc_angle)
 {
 	this->org_x = org_x;
 	this->org_y = org_y;
@@ -107,7 +106,7 @@ void Circle::init(float org_x, float org_y, float radius, float inc_angle)
 	delete [] vertices;
 }
 
-void Circle::draw()
+void CheckBox::draw()
 {
 	unsigned int loc = -1;
 

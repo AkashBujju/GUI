@@ -20,6 +20,22 @@ unsigned int rect_indices[] = {
 	1, 2, 3
 };
 
+struct BorderRect
+{
+	private:
+		unsigned int vao, vbo, program = -1;
+		glm::mat4 model;
+
+	public:
+		glm::vec3 pos;
+		glm::vec4 color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		float x_scale = 0.1f;
+		float y_scale = 0.1f;
+
+		void init();
+		void draw();
+};
+
 struct Rect
 {
 	private:
@@ -128,6 +144,33 @@ void Rect::draw()
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+}
+
+void BorderRect::init()
+{
+	program = make_program("C:\\Users\\Akash\\Documents\\Programming\\OpenGL\\Include\\rect_vertex", "C:\\Users\\Akash\\Documents\\Programming\\OpenGL\\Include\\rect_fragment");
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rect_vertices), rect_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+}
+
+void BorderRect::draw()
+{
+	glUseProgram(program);
+
+	model = glm::translate(model, pos);
+	model = glm::scale(model, glm::vec3(x_scale, y_scale, 1.0f));
+	set_mat4f(program, "model", model);
+	set_vec4f(program, "rect_color", color.r, color.g, color.b, color.a);
+
+	model = glm::mat4();
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_LINE_LOOP, 0, 4);
 }
 
 #endif
