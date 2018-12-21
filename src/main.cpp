@@ -34,12 +34,15 @@ int main()
 	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 	glfwSetKeyCallback(window, key_callback);
 
-	d.init(-0.2f, 0.2f);
+	d.init(0.0f, 0.0f);
 	d.add_item("Hello");
 	d.add_item("Tomato");
 	d.add_item("Exit");
 	d.add_item("Eggs");
 	d.add_item("Onion");
+
+	d.set_x(-0.2f);
+	d.set_y(+0.4f);
 
 	while (!glfwWindowShouldClose(window))
 	{
