@@ -36,11 +36,16 @@ int main()
 
 	d.init(0.0f, 0.0f);
 	d.add_item("Item_1", scr_width, scr_height, 20);
-	d.add_item("Item_222222", scr_width, scr_height, 20);
+	d.add_item("Item_2", scr_width, scr_height, 20);
 	d.add_item("Item_3", scr_width, scr_height, 20);
 	d.set_x(-0.5f, scr_width);
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
+
+	/*
+	d.pull_up();
+	d.pull_down();
+	*/
 
 	while (!glfwWindowShouldClose(window))
 	{

@@ -21,6 +21,8 @@ struct DropDown
 		std::vector<Button*> buttons;
 		std::vector<BorderRect*> b_rects;
 
+		bool is_pulled_up = false;
+
 	public:
 		void init(float x, float y);
 		void add_item(std::string text, unsigned int scr_width, unsigned int scr_height, unsigned int _fsize);
@@ -29,9 +31,35 @@ struct DropDown
 		void set_x(float x, unsigned int scr_width);
 		void set_y(float y, unsigned int scr_height);
 		void set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height);
+		void pull_up();
+		void pull_down();
 
 		~DropDown();
 };
+
+void DropDown::pull_up()
+{
+	is_pulled_up = true;
+
+	panel.pos.y = buttons[0]->rect.pos.y;
+	panel.y_scale = buttons[0]->rect.y_scale * 1.25f;
+
+	panel_border.pos.y = panel.pos.y;
+	panel_border.y_scale = panel.y_scale * 1.01f;
+}
+
+void DropDown::pull_down()
+{
+	is_pulled_up = false;
+
+	float middle_x = b_rects[0]->pos.x - b_rects[0]->x_scale + panel.x_scale;
+	float middle_y = b_rects[0]->pos.y + b_rects[0]->y_scale;
+	middle_y -= (b_rects[0]->y_scale * b_rects.size() * 1.15f);
+	panel.pos.y = middle_y;
+	panel.y_scale = (b_rects[0]->y_scale * b_rects.size() * 1.25f);
+	panel_border.pos.y = panel.pos.y;
+	panel_border.y_scale = panel.y_scale * 1.01f;
+}
 
 void DropDown::set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height)
 {
@@ -50,6 +78,15 @@ void DropDown::set_to(unsigned int index, unsigned int scr_width, unsigned int s
 	float tmp_brects_y = b_rects[index]->pos.y;
 	b_rects[index]->pos.y = b_rects[0]->pos.y;
 	b_rects[0]->pos.y = tmp_brects_y;
+
+	// Also exchanging their indices
+	Button* _btn_index = buttons[index];
+	buttons[index] = buttons[0];
+	buttons[0] = _btn_index;
+
+	BorderRect* tmp_rect = b_rects[index];
+	b_rects[index] = b_rects[0];
+	b_rects[0] = tmp_rect;
 }
 
 void DropDown::set_x(float x, unsigned int scr_width)
@@ -148,8 +185,19 @@ void DropDown::draw()
 	panel_border.draw();
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
-		buttons[i]->draw();
-		b_rects[i]->draw();
+		if(is_pulled_up)
+		{
+			if(i == 0)
+			{
+				buttons[i]->draw();
+				b_rects[i]->draw();
+			}
+		}
+		else
+		{
+			buttons[i]->draw();
+			b_rects[i]->draw();
+		}
 	}
 }
 
