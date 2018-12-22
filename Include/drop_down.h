@@ -36,9 +36,26 @@ struct DropDown
 		void set_y(float y, unsigned int scr_height);
 		void set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height);
 
+		void switch_to(float x_norm, float y_norm, unsigned int scr_width, unsigned int scr_height);
+
 		void toggle_box();
 		~DropDown();
 };
+
+void DropDown::switch_to(float x_norm, float y_norm, unsigned int scr_width, unsigned int scr_height)
+{
+	if(is_pulled_up)
+		return;
+
+	for(unsigned int i = 0; i < buttons.size(); i++)
+	{
+		if(buttons[i]->rect.is_on(x_norm, y_norm))
+		{
+			set_to(i, scr_width, scr_height);
+			break;
+		}
+	}
+}
 
 float DropDown::get_max_width()
 {

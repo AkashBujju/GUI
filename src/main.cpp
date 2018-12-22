@@ -37,9 +37,9 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 
 	d.init(0.0f, 0.0f);
-	d.add_item("Item_1", scr_width, scr_height, 15);
-	d.add_item("Item_2....", scr_width, scr_height, 15);
-	d.add_item("Item_3.", scr_width, scr_height, 15);
+	d.add_item("Item_1", scr_width, scr_height, 20);
+	d.add_item("Item_2....", scr_width, scr_height, 20);
+	d.add_item("Item_3.", scr_width, scr_height, 20);
 	d.set_x(-0.6f, scr_width);
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
@@ -73,6 +73,11 @@ void update()
 	if(mouse_clicked && d.image.is_on(mouse_x, mouse_y))
 	{
 		d.toggle_box();
+	}
+
+	if(mouse_clicked)
+	{
+		d.switch_to(mouse_x, mouse_y, scr_width, scr_height);
 	}
 }
 
