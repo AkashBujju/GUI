@@ -21,23 +21,31 @@ struct DropDown
 		BorderRect panel_border;
 		std::vector<Button*> buttons;
 		std::vector<BorderRect*> b_rects;
-		Image image;
-
 		bool is_pulled_up = false;
 
+		void pull_up();
+		void pull_down();
 	public:
+		Image image;
+
 		void init(float x, float y);
 		void add_item(std::string text, unsigned int scr_width, unsigned int scr_height, unsigned int _fsize);
 		void draw();
-
 		void set_x(float x, unsigned int scr_width);
 		void set_y(float y, unsigned int scr_height);
 		void set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height);
-		void pull_up();
-		void pull_down();
 
+		void toggle_box();
 		~DropDown();
 };
+
+void DropDown::toggle_box()
+{
+	if(is_pulled_up)
+		pull_down();
+	else
+		pull_up();
+}
 
 void DropDown::pull_up()
 {

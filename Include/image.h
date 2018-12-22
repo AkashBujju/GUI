@@ -50,6 +50,15 @@ struct Image
 		inline bool is_on(float x, float y);
 };
 
+bool Image::is_on(float x, float y)
+{
+	bool b = false;
+	if (x > pos.x - x_scale && x < pos.x + x_scale && y > pos.y - y_scale && y < pos.y + y_scale)
+		b = true;
+
+	return b;
+}
+
 void Image::init(std::string fname)
 {
 	program = make_program("C:\\Users\\Akash\\Documents\\GitHub\\GUI\\Include\\image_vertex", "C:\\Users\\Akash\\Documents\\GitHub\\GUI\\Include\\image_fragment");

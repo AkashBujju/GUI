@@ -12,6 +12,7 @@
 #include <image.h>
 #include <drop_down.h>
 #include <utils.h>
+#include <rect.h>
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -43,9 +44,6 @@ int main()
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
 
-	// d.pull_up();
-	// d.pull_down();
-
 	while (!glfwWindowShouldClose(window))
 	{
 		mouse_clicked = false;
@@ -72,8 +70,10 @@ int main()
 
 void update()
 {
-	float norm_x = get_x_normalized(mouse_x, scr_width);
-	float norm_y = get_y_normalized(mouse_y, scr_height);
+	if(mouse_clicked && d.image.is_on(mouse_x, mouse_y))
+	{
+		d.toggle_box();
+	}
 }
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
