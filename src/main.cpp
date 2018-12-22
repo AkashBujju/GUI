@@ -19,7 +19,7 @@ void update();
 void draw();
 
 const int scr_width = 600, scr_height = 600;
-int mouse_x = 0, mouse_y = 0;
+double mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
 DropDown d;
@@ -35,23 +35,23 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 
 	d.init(0.0f, 0.0f);
-	d.add_item("Hello");
-	d.add_item("Tomato");
-	d.add_item("Exit");
-	d.add_item("Eggs");
-	d.add_item("Onion");
-
-	d.set_x(-0.2f);
-	d.set_y(+0.4f);
+	d.add_item("Item_1", scr_width, scr_height, 20);
+	d.add_item("Item_222222", scr_width, scr_height, 20);
+	d.add_item("Item_3", scr_width, scr_height, 20);
+	d.set_x(-0.5f, scr_width);
+	d.set_y(0.0f, scr_height);
+	d.set_to(1, scr_width, scr_height);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		mouse_clicked = false;
 		glfwPollEvents();
 
+		/*
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 		if(state == GLFW_PRESS)
 			std::cout << "Pressed" << std::endl;
+		*/
 
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -85,8 +85,8 @@ void draw()
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-	mouse_x = xpos;
-	mouse_y = ypos;
+	mouse_x = get_x_normalized(xpos, scr_width);
+	mouse_y = get_y_normalized(ypos, scr_height);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)

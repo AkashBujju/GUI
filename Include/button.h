@@ -12,8 +12,6 @@ struct Button
 	private:
 		Font font;
 		std::string text;
-		float text_pos_x = 0;
-		float text_pos_y = 0;
 		float rect_x = 0;
 		float rect_y = 0;
 
@@ -23,13 +21,23 @@ struct Button
 	public:
 		Rect rect;
 		glm::vec3 text_color = glm::vec3(1.0f, 1.0f, 1.0f);
+		float text_pos_x = 0;
+		float text_pos_y = 0;
 
 		void update();
 		void draw();
 		void init(std::string text, int scr_width, int scr_height, const char* font_name, unsigned int _sz);
 		void set_x(float x, int scr_width);
 		void set_y(float y, int scr_height);
+		glm::vec3 get_pos(unsigned int scr_width, unsigned int scr_height);
 };
+
+glm::vec3 Button::get_pos(unsigned int scr_width, unsigned int scr_height)
+{
+	float tmp_x = get_x_normalized(text_pos_x, scr_width);
+	float tmp_y = get_y_normalized(text_pos_y, scr_height);
+	return glm::vec3(tmp_x, tmp_y, 0.0f);
+}
 
 void Button::set_x(float x, int scr_width)
 {

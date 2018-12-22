@@ -23,16 +23,33 @@ struct DropDown
 
 	public:
 		void init(float x, float y);
-		void add_item(std::string text);
+		void add_item(std::string text, unsigned int scr_width, unsigned int scr_height, unsigned int _fsize);
 		void draw();
 
-		void set_x(float x);
-		void set_y(float y);
+		void set_x(float x, unsigned int scr_width);
+		void set_y(float y, unsigned int scr_height);
+		void set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height);
 
 		~DropDown();
 };
 
-void DropDown::set_x(float x)
+void DropDown::set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height)
+{
+	// Swap pos of Index 0 with the above index
+	float tmp_button_y = buttons[index]->text_pos_y;
+	buttons[index]->text_pos_y = buttons[0]->text_pos_y;
+	buttons[0]->text_pos_y = tmp_button_y;
+
+	float tmp_rect_y = buttons[index]->rect.pos.y;
+	buttons[index]->rect.pos.y = buttons[0]->rect.pos.y; 
+	buttons[0]->rect.pos.y = tmp_rect_y;
+
+	float tmp_brects_y = b_rects[index]->pos.y;
+	b_rects[index]->pos.y = b_rects[0]->pos.y;
+	b_rects[0]->pos.y = tmp_brects_y;
+}
+
+void DropDown::set_x(float x, unsigned int scr_width)
 {
 	panel.pos.x = x;
 	panel_border.pos.x = panel.pos.x;
@@ -42,11 +59,11 @@ void DropDown::set_x(float x)
 
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
-		buttons[i]->set_x(current_add_pos.x + buttons[i]->rect.x_scale, 600);
+		buttons[i]->set_x(current_add_pos.x + buttons[i]->rect.x_scale, scr_width);
 	}
 }
 
-void DropDown::set_y(float y)
+void DropDown::set_y(float y, unsigned int scr_height)
 {
 	panel.pos.y = y;
 	panel_border.pos.y = panel.pos.y;
@@ -56,7 +73,7 @@ void DropDown::set_y(float y)
 
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
-		buttons[i]->set_y(current_add_pos.y - buttons[i]->rect.y_scale, 600);
+		buttons[i]->set_y(current_add_pos.y - buttons[i]->rect.y_scale, scr_height);
 		b_rects[i]->pos = buttons[i]->rect.pos;
 
 		current_add_pos.y -= (2.4f * b_rects[i]->y_scale);
@@ -76,25 +93,27 @@ void DropDown::init(float x, float y)
 {
 	panel.init();
 	panel.color = glm::vec4(0.2f, 0.3f, 0.2f, 1.0f);
+	panel.x_scale = 0.3f;
 	panel.pos.x = x;
 	panel.pos.y = y;
 
 	panel_border.init();
 	panel_border.color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
 	panel_border.pos.x = panel.pos.x - 0.03f;
-	panel_border.pos.y = panel.pos.x + 0.03f;
+	panel_border.pos.y = panel.pos.y + 0.03f;
 
 	up_left = glm::vec3(panel.pos.x - panel.x_scale + 0.04f, panel.pos.y + panel.y_scale - 0.04f, 0.0f);
 
 	current_add_pos = up_left;
 }
 
-void DropDown::add_item(std::string text)
+void DropDown::add_item(std::string text, unsigned int scr_width, unsigned int scr_height, unsigned int _fsize)
 {
 	Button *tmp_btn = new Button;
-	tmp_btn->init(text, 600, 600, "Consolas.ttf", 20);
-	tmp_btn->set_x(current_add_pos.x + tmp_btn->rect.x_scale, 600);
-	tmp_btn->set_y(current_add_pos.y - tmp_btn->rect.y_scale, 600);
+	tmp_btn->init(text, scr_width, scr_height, "Consolas.ttf", _fsize);
+	tmp_btn->set_x(current_add_pos.x + tmp_btn->rect.x_scale, scr_width);
+	tmp_btn->set_y(current_add_pos.y - tmp_btn->rect.y_scale, scr_height);
+	tmp_btn->rect.color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
 
 	BorderRect *tmp_brect = new BorderRect;
 	tmp_brect->init();
