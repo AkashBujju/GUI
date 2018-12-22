@@ -42,8 +42,8 @@ int main()
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
 
-	/*
 	d.pull_up();
+	/*
 	d.pull_down();
 	*/
 

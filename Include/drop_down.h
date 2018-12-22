@@ -187,11 +187,9 @@ void DropDown::draw()
 	{
 		if(is_pulled_up)
 		{
-			if(i == 0)
-			{
-				buttons[i]->draw();
-				b_rects[i]->draw();
-			}
+			buttons[0]->draw();
+			b_rects[0]->draw();
+			return;
 		}
 		else
 		{
