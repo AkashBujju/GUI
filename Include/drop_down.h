@@ -35,6 +35,9 @@ struct DropDown
 
 void DropDown::set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height)
 {
+	if(buttons.size() == 0 || index > buttons.size() - 1)
+		return;
+
 	// Swap pos of Index 0 with the above index
 	float tmp_button_y = buttons[index]->text_pos_y;
 	buttons[index]->text_pos_y = buttons[0]->text_pos_y;

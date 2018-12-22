@@ -40,7 +40,7 @@ int main()
 	d.add_item("Item_3", scr_width, scr_height, 20);
 	d.set_x(-0.5f, scr_width);
 	d.set_y(0.0f, scr_height);
-	d.set_to(1, scr_width, scr_height);
+	d.set_to(2, scr_width, scr_height);
 
 	while (!glfwWindowShouldClose(window))
 	{
