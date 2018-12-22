@@ -25,6 +25,7 @@ struct DropDown
 
 		void pull_up();
 		void pull_down();
+		float get_max_width();
 	public:
 		Image image;
 
@@ -38,6 +39,19 @@ struct DropDown
 		void toggle_box();
 		~DropDown();
 };
+
+float DropDown::get_max_width()
+{
+	float tmp_w = 0;
+	for(unsigned int i = 0; i < buttons.size(); i++)
+	{
+		Font *f = &(buttons[i]->font);
+		if(f->get_width(f->current_text) > tmp_w)
+			tmp_w = f->get_width(f->current_text);
+	}
+
+	return tmp_w;
+}
 
 void DropDown::toggle_box()
 {
@@ -53,6 +67,7 @@ void DropDown::pull_up()
 	if(buttons.size() == 0)
 		return;
 
+	image.pos.y = panel.pos.y + 2 * image.y_scale * 1.2f;
 	panel.pos.y = buttons[0]->rect.pos.y;
 	panel.y_scale = buttons[0]->rect.y_scale * 1.25f;
 
@@ -73,6 +88,7 @@ void DropDown::pull_down()
 	panel.y_scale = (b_rects[0]->y_scale * b_rects.size() * 1.25f);
 	panel_border.pos.y = panel.pos.y;
 	panel_border.y_scale = panel.y_scale * 1.01f;
+	image.pos.y = panel.pos.y + 2 * image.y_scale * 1.3f;
 }
 
 void DropDown::set_to(unsigned int index, unsigned int scr_width, unsigned int scr_height)
@@ -154,8 +170,8 @@ void DropDown::init(float x, float y)
 	panel.pos.y = y;
 
 	image.init("C:\\Users\\Akash\\Documents\\GitHub\\GUI\\src\\down_arrow_2.png");
-	image.x_scale = 0.1f;
-	image.y_scale = 0.1f;
+	image.x_scale = 0.05f;
+	image.y_scale = 0.05f;
 
 	panel_border.init();
 	panel_border.color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
@@ -163,7 +179,6 @@ void DropDown::init(float x, float y)
 	panel_border.pos.y = panel.pos.y + 0.03f;
 
 	up_left = glm::vec3(panel.pos.x - panel.x_scale + 0.04f, panel.pos.y + panel.y_scale - 0.04f, 0.0f);
-
 	current_add_pos = up_left;
 }
 
@@ -189,9 +204,12 @@ void DropDown::add_item(std::string text, unsigned int scr_width, unsigned int s
 
 	float middle_x = b_rects[0]->pos.x - b_rects[0]->x_scale + panel.x_scale;
 	float middle_y = b_rects[0]->pos.y + b_rects[0]->y_scale;
-	middle_y -= (b_rects[0]->y_scale * b_rects.size() * 1.15f);
+	middle_y -= (b_rects[0]->y_scale * b_rects.size() * 1.1f);
 	panel.pos.y = middle_y;
 	panel.y_scale = (b_rects[0]->y_scale * b_rects.size() * 1.25f);
+
+	float norm_w = get_max_width() / (scr_width / 2.0f);
+	panel.x_scale = norm_w;
 
 	panel_border.pos.x = panel.pos.x;
 	panel_border.pos.y = panel.pos.y;

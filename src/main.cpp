@@ -20,7 +20,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void update();
 void draw();
 
-const int scr_width = 600, scr_height = 600;
+const int scr_width = 1024, scr_height = 800;
 double mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 
@@ -37,10 +37,10 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 
 	d.init(0.0f, 0.0f);
-	d.add_item("Item_1", scr_width, scr_height, 20);
-	d.add_item("Item_2", scr_width, scr_height, 20);
-	d.add_item("Item_3", scr_width, scr_height, 20);
-	d.set_x(-0.5f, scr_width);
+	d.add_item("Item_1", scr_width, scr_height, 15);
+	d.add_item("Item_2....", scr_width, scr_height, 15);
+	d.add_item("Item_3.", scr_width, scr_height, 15);
+	d.set_x(-0.6f, scr_width);
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
 

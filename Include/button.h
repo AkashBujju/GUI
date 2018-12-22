@@ -10,8 +10,6 @@
 struct Button
 {
 	private:
-		Font font;
-		std::string text;
 		float rect_x = 0;
 		float rect_y = 0;
 
@@ -20,6 +18,8 @@ struct Button
 
 	public:
 		Rect rect;
+		Font font;
+		std::string text;
 		glm::vec3 text_color = glm::vec3(1.0f, 1.0f, 1.0f);
 		float text_pos_x = 0;
 		float text_pos_y = 0;
@@ -106,7 +106,7 @@ void Button::init(std::string text, int scr_width, int scr_height, const char* f
 	font.init_lib();
 	font.init_program(scr_width, scr_height);
 	font.make_buffer();
-	font.init_font(font_name, _sz);
+	font.init_font(text, font_name, _sz);
 
 	// rect default props
 	rect.init();
@@ -114,7 +114,9 @@ void Button::init(std::string text, int scr_width, int scr_height, const char* f
 	rect.y_scale = 0.08f;
 
 	float norm_w = font.get_width(text) / (float)scr_width;
-	rect.x_scale = norm_w + 0.04f;
+	float norm_h = font.get_height(text) / (float)scr_height;
+	rect.x_scale = norm_w + 0.02f;
+	rect.y_scale = norm_h + 0.03f;
 
 	set_text_pos_x(0.0, scr_width);
 	set_text_pos_y(0.0, scr_height);
