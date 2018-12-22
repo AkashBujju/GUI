@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <button.h>
+#include <image.h>
 #include <rect.h>
 
 struct DropDown
@@ -20,6 +21,7 @@ struct DropDown
 		BorderRect panel_border;
 		std::vector<Button*> buttons;
 		std::vector<BorderRect*> b_rects;
+		Image image;
 
 		bool is_pulled_up = false;
 
@@ -40,6 +42,8 @@ struct DropDown
 void DropDown::pull_up()
 {
 	is_pulled_up = true;
+	if(buttons.size() == 0)
+		return;
 
 	panel.pos.y = buttons[0]->rect.pos.y;
 	panel.y_scale = buttons[0]->rect.y_scale * 1.25f;
@@ -51,6 +55,8 @@ void DropDown::pull_up()
 void DropDown::pull_down()
 {
 	is_pulled_up = false;
+	if(buttons.size() == 0)
+		return;
 
 	float middle_x = b_rects[0]->pos.x - b_rects[0]->x_scale + panel.x_scale;
 	float middle_y = b_rects[0]->pos.y + b_rects[0]->y_scale;
@@ -96,6 +102,7 @@ void DropDown::set_x(float x, unsigned int scr_width)
 	panel_border.x_scale = panel.x_scale * 1.01f;
 	up_left.x = panel.pos.x - panel.x_scale + 0.04f;
 	current_add_pos.x = up_left.x;
+	image.pos.x = panel.pos.x + panel.x_scale + image.x_scale;
 
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
@@ -110,6 +117,7 @@ void DropDown::set_y(float y, unsigned int scr_height)
 	panel_border.y_scale = panel.y_scale * 1.01f;
 	up_left.y = panel.pos.y + panel.y_scale - 0.04f;
 	current_add_pos.y = up_left.y;
+	image.pos.y = panel.pos.y + 2 * image.y_scale;
 
 	for(unsigned int i = 0; i < buttons.size(); i++)
 	{
@@ -136,6 +144,10 @@ void DropDown::init(float x, float y)
 	panel.x_scale = 0.3f;
 	panel.pos.x = x;
 	panel.pos.y = y;
+
+	image.init("C:\\Users\\Akash\\Documents\\GitHub\\GUI\\src\\down_arrow_2.png");
+	image.x_scale = 0.1f;
+	image.y_scale = 0.1f;
 
 	panel_border.init();
 	panel_border.color = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
@@ -177,10 +189,14 @@ void DropDown::add_item(std::string text, unsigned int scr_width, unsigned int s
 	panel_border.pos.y = panel.pos.y;
 	panel_border.x_scale = panel.x_scale * 1.01f;
 	panel_border.y_scale = panel.y_scale * 1.01f;
+
+	image.pos.y = panel.pos.y + 2 * image.y_scale * 1.05f;
+	image.pos.x = panel.pos.x + panel.x_scale + image.x_scale;
 }
 
 void DropDown::draw()
 {
+	image.draw();
 	panel.draw();
 	panel_border.draw();
 	for(unsigned int i = 0; i < buttons.size(); i++)

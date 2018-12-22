@@ -8,14 +8,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-float rect_vertices[] = {
+static float rect_vertices[] = {
 	+1.0f, +1.0f, 0.0f,
 	+1.0f, -1.0f, 0.0f,
 	-1.0f, -1.0f, 0.0f,
 	-1.0f, +1.0f, 0.0f
 };
 
-unsigned int rect_indices[] = {
+static unsigned int rect_indices[] = {
 	0, 1, 3,
 	1, 2, 3
 };
@@ -83,7 +83,7 @@ void Rect::init()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect_vertices), rect_vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rect_indices), rect_indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 }
 

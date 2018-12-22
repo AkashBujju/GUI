@@ -9,6 +9,7 @@
 #include <init.h>
 #include <button.h>
 #include <circle.h>
+#include <image.h>
 #include <drop_down.h>
 #include <utils.h>
 
@@ -42,10 +43,8 @@ int main()
 	d.set_y(0.0f, scr_height);
 	d.set_to(2, scr_width, scr_height);
 
-	d.pull_up();
-	/*
-	d.pull_down();
-	*/
+	// d.pull_up();
+	// d.pull_down();
 
 	while (!glfwWindowShouldClose(window))
 	{

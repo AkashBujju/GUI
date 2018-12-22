@@ -1,0 +1,13 @@
+#version 330 core
+
+layout(location = 0) in vec3 apos;
+layout(location = 1) in vec2 atex_coord;
+
+out vec2 tex_coord;
+uniform mat4 model;
+
+void main()
+{
+	gl_Position = model * vec4(apos, 1.0f);
+	tex_coord = vec2(atex_coord);
+}
