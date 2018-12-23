@@ -28,6 +28,7 @@ struct TextBox
 	unsigned int scr_height = 0;
 
 	unsigned int current_line_index = 0;
+	unsigned int current_char_index = 0;
 
 	void draw();
 	void init(unsigned int w, unsigned int h);
@@ -47,11 +48,23 @@ struct TextBox
 
 void TextBox::goto_prev_char()
 {
+	if(current_char_index < 0)
+		current_char_index = 0;
+	else
+		current_char_index--;
+
 	cursor.pos.x -= get_norm_char_w();
 }
 
 void TextBox::goto_next_char()
 {
+	if(current_char_index > texts[current_line_index]->text.size() - 1)
+	{
+		current_char_index = texts[current_line_index]->text.size() - 1;
+	}
+	else
+		current_char_index++;
+
 	cursor.pos.x += get_norm_char_w();
 }
 
@@ -143,7 +156,7 @@ void TextBox::set_text_pos_x(Text *text, float x, int scr_width)
 {
 	float norm_w = text->font.get_width(text->text) / (float)scr_width;
 	// x -= norm_w;
-	
+
 	text->norm_pos.x = x;
 
 	float final_norm_x = 0;

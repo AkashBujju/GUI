@@ -63,9 +63,6 @@ int main()
 	tb.cursor.x_scale = tb.get_norm_char_w() / 2.0f;
 	tb.cursor.y_scale = tb.get_norm_char_h() / 2.0f;
 
-	tb.cursor.pos.y = tb.texts[0]->norm_pos.y;
-
-
 	while (!glfwWindowShouldClose(window))
 	{
 		mouse_clicked = false;
