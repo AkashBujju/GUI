@@ -133,6 +133,9 @@ bool Rect::is_on(float x, float y)
 
 void Rect::draw()
 {
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+
 	glUseProgram(program);
 
 	model = glm::translate(model, pos);
@@ -160,6 +163,9 @@ void BorderRect::init()
 
 void BorderRect::draw()
 {
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+
 	glUseProgram(program);
 
 	model = glm::translate(model, pos);

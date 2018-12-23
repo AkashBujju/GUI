@@ -43,7 +43,7 @@ int get_org_x(float x, const int scr_width)
 int get_org_y(float y, const int scr_height)
 {
     int val = 0;
-    if (y > 0)
+    if (y >= 0)
         val = y * scr_height / 2;
     else
         val = -(scr_height / 2 + (y * scr_height / 2));
