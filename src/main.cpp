@@ -25,6 +25,7 @@ void draw();
 const int scr_width = 1024, scr_height = 800;
 double mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
+GLFWwindow *window = nullptr;
 
 // DropDown d;
 TextBox tb;
@@ -32,7 +33,7 @@ TextBox tb;
 int main()
 {
 	init_glfw();
-	GLFWwindow *window = make_window(scr_width, scr_height, "Text");
+	window = make_window(scr_width, scr_height, "Text");
 	init_glad();
 
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -105,6 +106,21 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 {
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(win, true);
+
+	int right_state, left_state, up_state, down_state;
+	right_state = glfwGetKey(window, GLFW_KEY_RIGHT);
+	left_state = glfwGetKey(window, GLFW_KEY_LEFT);
+	up_state = glfwGetKey(window, GLFW_KEY_UP);
+	down_state = glfwGetKey(window, GLFW_KEY_DOWN);
+
+	if(right_state == GLFW_PRESS)
+		tb.goto_next_char();
+   else if(left_state == GLFW_PRESS)
+		tb.goto_prev_char();
+   else if(up_state == GLFW_PRESS)
+		tb.goto_prev_line();
+	else if(down_state == GLFW_PRESS)
+		tb.goto_next_line();
 }
 
 void draw()
@@ -121,14 +137,6 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 
 void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
-	if((char)codepoint == 'w')
-		tb.goto_prev_line();
-	else if((char)codepoint == 's')
-		tb.goto_next_line();
-	else if((char)codepoint == 'a')
-		tb.goto_prev_char();
-	else if((char)codepoint == 'd')
-		tb.goto_next_char();
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
