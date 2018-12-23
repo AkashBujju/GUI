@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -60,9 +61,13 @@ int main()
 	tb.add_text("  return 0;");
 	tb.add_text("}");
 
-
 	tb.cursor.x_scale = tb.get_norm_char_w() / 2.0f;
 	tb.cursor.y_scale = tb.get_norm_char_h() / 2.0f;
+
+	std::string tmp = "Programming c++";
+	std::string str = "in ";
+	tmp.insert(12, str);
+	std::cout << tmp << std::endl;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -113,6 +118,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 	up_state = glfwGetKey(window, GLFW_KEY_UP);
 	down_state = glfwGetKey(window, GLFW_KEY_DOWN);
 
+	int erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
+
 	if(right_state == GLFW_PRESS)
 		tb.goto_next_char();
    else if(left_state == GLFW_PRESS)
@@ -121,6 +128,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		tb.goto_prev_line();
 	else if(down_state == GLFW_PRESS)
 		tb.goto_next_line();
+	else if(erase_state == GLFW_PRESS)
+		tb.erase();
 }
 
 void draw()
@@ -137,6 +146,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 
 void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
+	char ch = (char)codepoint;
+	tb.insert(ch);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)

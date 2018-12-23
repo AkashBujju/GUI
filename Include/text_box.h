@@ -34,6 +34,8 @@ struct TextBox
 	void goto_next_line();
 	void goto_prev_char();
 	void goto_prev_line();
+	void insert(char ch);
+	void erase();
 
 private:
 	unsigned int scr_width = 0;
@@ -44,6 +46,19 @@ private:
 	void set_text_pos_y(Text *text, float y, int scr_height);
 	void check_and_set_to_max_or_min();
 };
+
+void TextBox::erase()
+{
+	texts[current_line_index]->text.erase(current_char_index, 1);
+}
+
+void TextBox::insert(char ch)
+{
+	std::string tmp;
+	tmp.push_back(ch);
+	texts[current_line_index]->text.insert(current_char_index, tmp);
+	goto_next_char();
+}
 
 void TextBox::check_and_set_to_max_or_min()
 {
