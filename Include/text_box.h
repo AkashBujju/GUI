@@ -24,32 +24,45 @@ struct TextBox
 	glm::vec2 current_line;
 	std::vector<Text*> texts;
 
-	unsigned int scr_width = 0;
-	unsigned int scr_height = 0;
-
-	unsigned int current_line_index = 0;
-	unsigned int current_char_index = 0;
-
 	void draw();
 	void init(unsigned int w, unsigned int h);
-	void set_text_pos_x(Text *text, float x, int scr_width);
-	void set_text_pos_y(Text *text, float y, int scr_height);
-
 	void add_text(std::string text);
 
 	float get_norm_char_w();
 	float get_norm_char_h();
-
 	void goto_next_char();
 	void goto_next_line();
 	void goto_prev_char();
 	void goto_prev_line();
+
+private:
+	unsigned int scr_width = 0;
+	unsigned int scr_height = 0;
+	unsigned int current_line_index = 0;
+	unsigned int current_char_index = 0;
+	void set_text_pos_x(Text *text, float x, int scr_width);
+	void set_text_pos_y(Text *text, float y, int scr_height);
+	void check_and_set_to_max_or_min();
 };
+
+void TextBox::check_and_set_to_max_or_min()
+{
+	if(current_char_index > texts[current_line_index]->text.size() - 1)
+	{
+		cursor.pos.x = current_line.x + cursor.x_scale;
+		current_char_index = 0;
+		for(unsigned int i = 0; i < texts[current_line_index]->text.size() - 1; i++)
+		{
+			cursor.pos.x += get_norm_char_w();
+			current_char_index++;
+		}
+	}
+}
 
 void TextBox::goto_prev_char()
 {
-	if(current_char_index < 0)
-		current_char_index = 0;
+	if(current_char_index == 0)
+		return;
 	else
 		current_char_index--;
 
@@ -58,10 +71,8 @@ void TextBox::goto_prev_char()
 
 void TextBox::goto_next_char()
 {
-	if(current_char_index > texts[current_line_index]->text.size() - 1)
-	{
-		current_char_index = texts[current_line_index]->text.size() - 1;
-	}
+	if(current_char_index > texts[current_line_index]->text.size() - 2)
+		return;
 	else
 		current_char_index++;
 
@@ -75,6 +86,8 @@ void TextBox::goto_prev_line()
 
 	current_line_index--;
 	cursor.pos.y = texts[current_line_index]->norm_pos.y + cursor.y_scale / 2.0f;
+
+	check_and_set_to_max_or_min();
 }
 
 void TextBox::goto_next_line()
@@ -84,12 +97,13 @@ void TextBox::goto_next_line()
 
 	current_line_index++;
 	cursor.pos.y = texts[current_line_index]->norm_pos.y + cursor.y_scale / 2.0f;
+
+	check_and_set_to_max_or_min();
 }
 
 float TextBox::get_norm_char_w()
 {
 	float full_width = texts[0]->font.get_width(texts[0]->text) / (float)(scr_width);
-
 	float per_width = full_width / (float)texts[0]->text.size();
 
 	return per_width * 2;
