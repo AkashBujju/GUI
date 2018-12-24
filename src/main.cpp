@@ -30,6 +30,7 @@ GLFWwindow *window = nullptr;
 
 // DropDown d;
 TextBox tb;
+Button bt;
 
 int main()
 {
@@ -55,10 +56,9 @@ int main()
 
 	tb.init("Consolas.ttf", 20, scr_width, scr_height);
 
-	/*
-	tb.cursor.x_scale = tb.get_norm_char_w() / 2.0f;
-	tb.cursor.y_scale = tb.get_norm_char_h() / 2.0f;
-	*/
+	bt.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
+	bt.set_x(-0.4f, scr_width);
+	bt.set_y(0.6f, scr_height);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -96,6 +96,14 @@ void update()
 		d.switch_to(mouse_x, mouse_y, scr_width, scr_height);
 	}
 	*/
+
+	bt.update();
+
+	if(mouse_clicked && bt.rect.is_on(mouse_x, mouse_y))
+	{
+		bt.rect.push();	
+		tb.save("demo.txt");
+	}
 }
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
@@ -131,6 +139,7 @@ void draw()
 {
 	// d.draw();
 	tb.draw();
+	bt.draw();
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)

@@ -6,6 +6,7 @@
 #include <rect.h>
 #include <font.h>
 #include <utils.h>
+#include <fstream>
 
 struct Text
 {
@@ -44,6 +45,8 @@ struct TextBox
 	void erase();
 	void add_new_line();
 
+	void save(std::string f_name);
+
 	~TextBox();
 private:
 	unsigned int scr_width = 0;
@@ -54,6 +57,24 @@ private:
 	void set_text_pos_y(Text *text, float y, int scr_height);
 	void check_and_set_to_max_or_min();
 };
+
+void TextBox::save(std::string f_name)
+{
+	std::ofstream wr(f_name);
+	if(!wr)
+	{
+		std::cout << "Cannot open file: " << f_name << " for writing" << std::endl;
+		return;
+	}
+
+	for(unsigned int i = 0; i < texts.size(); i++)
+	{
+		wr << texts[i]->text;
+		wr << "\n";
+	}
+
+	wr.close();
+}
 
 TextBox::~TextBox()
 {
