@@ -23,6 +23,10 @@ struct TextBox
 	glm::vec2 current_line;
 	std::vector<Text*> texts;
 
+	Font cache_font;
+	unsigned int cache_font_width = 0;
+	unsigned int cache_font_height = 0;
+
 	std::string font_name;
 	unsigned int font_size;
 
@@ -74,10 +78,8 @@ void TextBox::add_new_line()
 
 	unsigned int tmp_li = current_line_index + 1;
 
-	glm::vec2 dims = get_font_dims("A", font_name, font_size, scr_width, scr_height);
-
 	current_line.y = texts[current_line_index]->norm_pos.y;
-	current_line.y -= (dims.y * 2.0f) / (float)scr_height;
+	current_line.y -= (cache_font_height * 2.0f) / (float)scr_height;
 	set_text_pos_x(t, current_line.x, scr_width);
 	set_text_pos_y(t, current_line.y, scr_height);
 
@@ -85,7 +87,7 @@ void TextBox::add_new_line()
 	for(unsigned int i = current_line_index; i < texts.size(); i++)
 	{
 		current_line.y = texts[i]->norm_pos.y;
-		current_line.y -= (dims.y * 2.0f) / (float)scr_height;
+		current_line.y -= (cache_font_height * 2.0f) / (float)scr_height;
 		set_text_pos_y(texts[i], current_line.y, scr_height);
 	}
 
@@ -93,6 +95,8 @@ void TextBox::add_new_line()
 	current_line.y = texts[current_line_index]->norm_pos.y;
 	cursor.pos.y = texts[current_line_index]->norm_pos.y + cursor.y_scale / 2.0f;
 	cursor.pos.x = up_left.x + cursor.x_scale;
+
+	current_char_index = 0;
 }
 
 void TextBox::erase()
@@ -105,7 +109,9 @@ void TextBox::insert(char ch)
 	std::string tmp;
 	tmp.push_back(ch);
 	texts[current_line_index]->text.insert(current_char_index, tmp);
-	goto_next_char();
+
+	current_char_index++;
+	cursor.pos.x += get_norm_char_w();
 }
 
 void TextBox::check_and_set_to_max_or_min()
@@ -134,7 +140,7 @@ void TextBox::goto_prev_char()
 
 void TextBox::goto_next_char()
 {
-	if(current_char_index > texts[current_line_index]->text.size() - 2)
+	if(current_char_index == texts[current_line_index]->text.size())
 		return;
 	else
 		current_char_index++;
@@ -166,15 +172,13 @@ void TextBox::goto_next_line()
 
 float TextBox::get_norm_char_w()
 {
-	float full_width = texts[0]->font.get_width(texts[0]->text) / (float)(scr_width);
-	float per_width = full_width / (float)texts[0]->text.size();
-
+	float per_width = cache_font_width / (float)(scr_width);
 	return per_width * 2;
 }
 
 float TextBox::get_norm_char_h()
 {
-	return texts[0]->font.get_height(texts[0]->text) * 4.0f / (float)scr_height;
+	return cache_font_height * 4.0f / (float)scr_height;
 }
 
 void TextBox::add_text(std::string text)
@@ -193,8 +197,7 @@ void TextBox::add_text(std::string text)
 	texts.push_back(t);
 
 	current_line.y = texts[texts.size() - 1]->norm_pos.y;
-	glm::vec2 dims = get_font_dims("A", font_name, font_size, scr_width, scr_height);
-	current_line.y -= (dims.y * 2.0f) / (float)scr_height;
+	current_line.y -= (cache_font_height * 2.0f) / (float)scr_height;
 }
 
 void TextBox::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
@@ -212,15 +215,25 @@ void TextBox::init(std::string font_name, unsigned int font_size, unsigned int w
 	box.y_scale = 0.5f;
 	box.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	cache_font.init_lib();
+	cache_font.init_program(scr_width, scr_height);
+	cache_font.make_buffer();
+	cache_font.init_font("A", font_name, font_size);
+	cache_font_width = cache_font.get_width("A");
+	cache_font_height = cache_font.get_height("A");
+
 	up_left = glm::vec2(box.pos.x - box.x_scale + 0.01f, box.pos.y + box.y_scale - 0.01f);
 	current_line = up_left;
 
 	cursor.init();
-	cursor.x_scale = 0.008f;
-	cursor.y_scale = 0.015f;
+	cursor.x_scale = get_norm_char_w() / 2.0f;
+	cursor.y_scale = get_norm_char_h() / 2.0f;
 	cursor.pos.x = current_line.x + cursor.x_scale;
 	cursor.pos.y = current_line.y - cursor.y_scale;
 	cursor.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	current_line.y -= ((cache_font_height * 2.5f) / (float)scr_height);
+
+	add_text("");
 }
 
 void TextBox::draw()

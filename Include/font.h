@@ -41,25 +41,9 @@ struct Font {
 	void init_font(std::string text, std::string fname, unsigned int _sz);
 	void render_text(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 	unsigned int get_width(std::string tx);
-	unsigned int Font::get_height(std::string tx);
+	unsigned int get_height(std::string tx);
 	~Font();
 };
-
-// x:w and y:h
-glm::vec2 get_font_dims(std::string text, std::string font_name, unsigned int _sz, unsigned int scr_width, unsigned int scr_height)
-{
-	Font tmp_font;
-	tmp_font.init_lib();
-	tmp_font.init_program(scr_width, scr_height);
-	tmp_font.make_buffer();
-	tmp_font.init_font(text, font_name, _sz);
-
-	glm::vec2 dims;
-	dims.x = tmp_font.get_width(text);
-	dims.y = tmp_font.get_height(text);
-
-	return dims;
-}
 
 void init_font_props(Font &font, std::string text, std::string fname, unsigned int _sz)
 {

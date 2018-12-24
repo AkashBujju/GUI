@@ -54,15 +54,11 @@ int main()
 	*/
 
 	tb.init("Consolas.ttf", 20, scr_width, scr_height);
-	tb.add_text("#include <iostream>");
-	tb.add_text("#include <vector>");
-	tb.add_text("int main() {");
-	tb.add_text("  std::cout << \"HelloWorld\" << std::endl;");
-	tb.add_text("  return 0;");
-	tb.add_text("}");
 
+	/*
 	tb.cursor.x_scale = tb.get_norm_char_w() / 2.0f;
 	tb.cursor.y_scale = tb.get_norm_char_h() / 2.0f;
+	*/
 
 	while (!glfwWindowShouldClose(window))
 	{
