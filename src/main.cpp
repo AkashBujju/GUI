@@ -30,7 +30,7 @@ GLFWwindow *window = nullptr;
 
 // DropDown d;
 TextBox tb;
-Button bt;
+Button save_btn, load_btn;
 
 int main()
 {
@@ -56,9 +56,13 @@ int main()
 
 	tb.init("Consolas.ttf", 20, scr_width, scr_height);
 
-	bt.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
-	bt.set_x(-0.4f, scr_width);
-	bt.set_y(0.6f, scr_height);
+	save_btn.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
+	load_btn.init("Load", scr_width, scr_height, "Consolas.ttf", 25);
+	save_btn.set_x(-0.4f, scr_width);
+	save_btn.set_y(0.6f, scr_height);
+
+	load_btn.set_x(-0.2f, scr_width);
+	load_btn.set_y(0.6f, scr_height);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -97,12 +101,17 @@ void update()
 	}
 	*/
 
-	bt.update();
+	save_btn.update();
 
-	if(mouse_clicked && bt.rect.is_on(mouse_x, mouse_y))
+	if(mouse_clicked && save_btn.rect.is_on(mouse_x, mouse_y))
 	{
-		bt.rect.push();	
+		save_btn.rect.push();	
 		tb.save("demo.txt");
+	}
+	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
+	{
+		load_btn.rect.push();	
+		tb.load("demo.txt");
 	}
 }
 
@@ -139,7 +148,8 @@ void draw()
 {
 	// d.draw();
 	tb.draw();
-	bt.draw();
+	save_btn.draw();
+	load_btn.draw();
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
