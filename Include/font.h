@@ -45,6 +45,70 @@ struct Font {
 	~Font();
 };
 
+// x:w and y:h
+glm::vec2 get_font_dims(std::string text, std::string font_name, unsigned int _sz, unsigned int scr_width, unsigned int scr_height)
+{
+	Font tmp_font;
+	tmp_font.init_lib();
+	tmp_font.init_program(scr_width, scr_height);
+	tmp_font.make_buffer();
+	tmp_font.init_font(text, font_name, _sz);
+
+	glm::vec2 dims;
+	dims.x = tmp_font.get_width(text);
+	dims.y = tmp_font.get_height(text);
+
+	return dims;
+}
+
+void init_font_props(Font &font, std::string text, std::string fname, unsigned int _sz)
+{
+	font.current_text = text;
+
+	if (FT_New_Face(font.ft, fname.c_str(), 0, &font.face))
+		std::cout << "Failed to load font: " << fname << std::endl;
+
+	FT_Set_Pixel_Sizes(font.face, 0, _sz);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	for (GLubyte c = 0; c < 128; c++)
+	{
+		if (FT_Load_Char(font.face, c, FT_LOAD_RENDER))
+		{
+			std::cout << "Failed to load Glyph" << std::endl;
+			continue;
+		}
+
+		GLuint texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RED,
+				font.face->glyph->bitmap.width,
+				font.face->glyph->bitmap.rows,
+				0,
+				GL_RED,
+				GL_UNSIGNED_BYTE,
+				font.face->glyph->bitmap.buffer);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		Character character = {
+			texture,
+			glm::ivec2(font.face->glyph->bitmap.width, font.face->glyph->bitmap.rows),
+			glm::ivec2(font.face->glyph->bitmap_left, font.face->glyph->bitmap_top),
+			(int)font.face->glyph->advance.x
+		};
+		font.characters.insert(std::pair<GLchar, Character>(c, character));
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 Font::~Font()
 {
 	FT_Done_Face(face);
@@ -138,50 +202,7 @@ void Font::init_lib()
 
 void Font::init_font(std::string text, std::string fname, unsigned int _sz)
 {
-	current_text = text;
-
-	if (FT_New_Face(ft, fname.c_str(), 0, &face))
-		std::cout << "Failed to load font: " << fname << std::endl;
-
-	FT_Set_Pixel_Sizes(face, 0, _sz);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	for (GLubyte c = 0; c < 128; c++)
-	{
-		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-		{
-			std::cout << "Failed to load Glyph" << std::endl;
-			continue;
-		}
-
-		GLuint texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RED,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
-				0,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		Character character = {
-			texture,
-			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-			(int)face->glyph->advance.x
-		};
-		characters.insert(std::pair<GLchar, Character>(c, character));
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
+	init_font_props(*this, text, fname, _sz);
 }
 
 void Font::init_program(int scr_width, int scr_height)

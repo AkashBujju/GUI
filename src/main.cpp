@@ -53,7 +53,7 @@ int main()
 	d.set_to(2, scr_width, scr_height);
 	*/
 
-	tb.init(scr_width, scr_height);
+	tb.init("Consolas.ttf", 20, scr_width, scr_height);
 	tb.add_text("#include <iostream>");
 	tb.add_text("#include <vector>");
 	tb.add_text("int main() {");
@@ -63,11 +63,6 @@ int main()
 
 	tb.cursor.x_scale = tb.get_norm_char_w() / 2.0f;
 	tb.cursor.y_scale = tb.get_norm_char_h() / 2.0f;
-
-	std::string tmp = "Programming c++";
-	std::string str = "in ";
-	tmp.insert(12, str);
-	std::cout << tmp << std::endl;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -113,12 +108,14 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		glfwSetWindowShouldClose(win, true);
 
 	int right_state, left_state, up_state, down_state;
+	int erase_state, return_state;
+
 	right_state = glfwGetKey(window, GLFW_KEY_RIGHT);
 	left_state = glfwGetKey(window, GLFW_KEY_LEFT);
 	up_state = glfwGetKey(window, GLFW_KEY_UP);
 	down_state = glfwGetKey(window, GLFW_KEY_DOWN);
-
-	int erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
+	erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
+	return_state = glfwGetKey(window, GLFW_KEY_ENTER);
 
 	if(right_state == GLFW_PRESS)
 		tb.goto_next_char();
@@ -130,6 +127,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		tb.goto_next_line();
 	else if(erase_state == GLFW_PRESS)
 		tb.erase();
+	else if(return_state == GLFW_PRESS)
+		tb.add_new_line();
 }
 
 void draw()
