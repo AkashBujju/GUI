@@ -26,8 +26,8 @@ struct TextBox
 	std::vector<Text*> texts;
 	std::deque<Text*> page;
 
-	unsigned int max_lines_per_page = 0;
-	unsigned int current_page_line_index = 0;
+	int max_lines_per_page = 0;
+	int current_page_line_index = 0;
 
 	Font cache_font;
 	unsigned int cache_font_width = 0;
@@ -57,8 +57,8 @@ struct TextBox
 private:
 	unsigned int scr_width = 0;
 	unsigned int scr_height = 0;
-	unsigned int current_line_index = 0;
-	unsigned int current_char_index = 0;
+	int current_line_index = 0;
+	int current_char_index = 0;
 	void set_text_pos_x(Text *text, float x, int scr_width);
 	void set_text_pos_y(Text *text, float y, int scr_height);
 	void check_and_set_to_max_or_min();
@@ -78,7 +78,8 @@ void TextBox::save(std::string f_name)
 	for(unsigned int i = 0; i < texts.size(); i++)
 	{
 		wr << texts[i]->text;
-		wr << "\n";
+		if(i != texts.size() - 1)
+			wr << "\n";
 	}
 
 	wr.close();
@@ -134,6 +135,10 @@ void TextBox::add_new_line()
 
 	std::vector<Text*>::iterator it = texts.begin();
 	texts.insert(it + current_line_index + 1, t);
+
+	std::deque<Text*>::iterator it_2 = page.begin();
+	page.pop_back();
+	page.insert(it_2 + current_page_line_index + 1, t);
 
 	unsigned int tmp_li = current_line_index + 1;
 
@@ -219,10 +224,8 @@ void TextBox::goto_prev_line()
 	if(current_line_index == 0)
 		return;
 
-	if(current_page_line_index != 0)
-		current_page_line_index--;
-
-	if(current_page_line_index == 0)
+	current_page_line_index--;
+	if(current_page_line_index == -1)
 	{
 		current_page_line_index = 0;
 		scroll_up();
@@ -241,7 +244,7 @@ void TextBox::goto_next_line()
 	if(current_line_index == texts.size() - 1)
 		return;
 
-	if(current_page_line_index <= max_lines_per_page - 1)
+	if(current_page_line_index < max_lines_per_page - 1)
 		current_page_line_index++;
 
 	if(current_line_index >= max_lines_per_page - 1) // scroll down
@@ -258,7 +261,7 @@ void TextBox::goto_next_line()
 
 void TextBox::scroll_up()
 {
-	/* Move every text below */
+	/* Move every page text below */
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
 		Text *ft = page[i];
@@ -283,7 +286,7 @@ void TextBox::scroll_up()
 
 void TextBox::scroll_down()
 {
-	/* Move every text above */
+	/* Move every page text above */
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
 		Text *ft = page[i];
@@ -372,9 +375,9 @@ void TextBox::init(std::string font_name, unsigned int font_size, unsigned int w
 	cursor.x_scale = get_norm_char_w() / 2.0f;
 	cursor.y_scale = get_norm_char_h() / 2.0f;
 	cursor.pos.x = current_line.x + cursor.x_scale;
-	cursor.pos.y = current_line.y - cursor.y_scale;
 	cursor.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	current_line.y -= ((cache_font_height * 2.5f) / (float)scr_height);
+	cursor.pos.y = current_line.y - cursor.y_scale;
 
 	max_lines_per_page = (up_left.y + 2 * box.y_scale) / ((float)(cache_font_height * 3.0f) / scr_height);
 	max_lines_per_page = (max_lines_per_page / 2.0f) * 0.9f;
