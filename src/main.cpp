@@ -50,9 +50,9 @@ int main()
 	*/
 
 	ntb.init("Consolas.ttf", 20, scr_width, scr_height);
-	ntb.add_text("Hello, World");
-	ntb.add_text("This is C++");
 	ntb.add_text("And OpenGL");
+	ntb.add_text("This is C++ Oh Oh");
+	ntb.add_text("Hello, World .... !!!!!!!!");
 
 	save_btn.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
 	load_btn.init("Load", scr_width, scr_height, "Consolas.ttf", 25);

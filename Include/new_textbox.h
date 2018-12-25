@@ -48,6 +48,7 @@ struct NewTextBox
 	void go_prev_char();
 	void go_next_line();
 	void go_prev_line();
+	void set_char_max();
 };
 
 void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
@@ -102,26 +103,54 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 
 void NewTextBox::go_next_char()
 {
+	if(current_char_index == texts[current_line_index]->text.size())
+		return;
+
 	current_char_index++;
 	cursor.pos.x += cache_font_width_norm * 2.0f;	
 }
 
 void NewTextBox::go_prev_char()
 {
+	if(current_char_index == 0)
+		return;
+
 	current_char_index--;
 	cursor.pos.x -= cache_font_width_norm * 2.0f;	
 }
 
 void NewTextBox::go_next_line()
 {
+	if(current_line_index == texts.size() - 1)
+		return;
+
 	current_line_index++;
+	if(current_char_index > texts[current_line_index]->text.size() - 1)
+		set_char_max();
+
 	cursor.pos.y -= (4.0f * cache_font_height_norm + 1.0f * text_gap_y_norm);
 }
 
 void NewTextBox::go_prev_line()
 {
+	if(current_line_index == 0)
+		return;
+
 	current_line_index--;
+	if(current_char_index > texts[current_line_index]->text.size())
+		set_char_max();
+
 	cursor.pos.y += (4.0f * cache_font_height_norm + 1.0f * text_gap_y_norm);
+}
+
+void NewTextBox::set_char_max()
+{
+	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm;
+	current_char_index = 0;
+
+	unsigned int _sz = texts[current_line_index]->text.size();
+	for(unsigned int i = 0; i < _sz; i++)
+		go_next_char();	
 }
 
 void NewTextBox::add_text(std::string text)
