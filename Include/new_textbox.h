@@ -58,7 +58,43 @@ struct NewTextBox
 	void load(std::string f_name);
 	void scroll_down();
 	void scroll_up();
+	void add_new_line();
 };
+
+void NewTextBox::add_new_line()
+{
+	// Insert a blank line below current_line_index
+	Text *t = new Text;
+	t->text = "";
+	t->font.init_lib();
+	t->font.init_program(scr_width, scr_height);
+	t->font.make_buffer();
+	t->font.init_font(t->text, font_name, font_size);
+	t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
+
+	std::vector<Text*>::iterator it = texts.begin();
+	texts.insert(it + current_line_index + 1, t);
+
+	std::deque<Text*>::iterator it_2 = page.begin();
+	page.pop_back();
+	page.insert(it_2 + current_page_line_index + 1, t);
+
+	unsigned int tmp_li = current_line_index + 1;
+	float tmp_y = 0;
+	tmp_y = texts[current_line_index]->pos.y;
+	tmp_y -= next_y_norm * scr_height;
+
+	current_line_index += 1;
+	for(unsigned int i = current_line_index; i < texts.size(); i++)
+	{
+		tmp_y = texts[i]->pos.y;
+		tmp_y -= next_y_norm * scr_height;
+	}
+
+	current_line_index = tmp_li;
+	cursor.pos.y -= next_y_norm;
+	current_char_index = 0;
+}
 
 void NewTextBox::scroll_down()
 {
@@ -155,8 +191,6 @@ void NewTextBox::load(std::string f_name)
 		}
 	}
 
-	std::cout << "pages.size(): " << page.size() << std::endl;
-
 	read.close();
 }
 
@@ -182,17 +216,16 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	text_gap_y_norm = text_gap_y_org / (float)scr_height;
 
 	box.init();
-	box.x_scale = 0.5f;
-	box.y_scale = 0.5f;
+	box.pos.x = -0.1f;
+	box.pos.y = +0.1f;
+	box.x_scale = 0.8f;
+	box.y_scale = 0.8f;
 	box.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	int tmp_x = get_org_x(box.pos.x, scr_width);
 	int tmp_y = get_org_y(box.pos.y, scr_height);
 	int box_w = (box.x_scale / 2.0f) * scr_width;
 	int box_h = (box.y_scale / 2.0f) * scr_height;
-
-	if(box.pos.x == 0)
-		tmp_x = scr_width / 2.0f;
 
 	if(tmp_y < 0)
 		tmp_y = abs(tmp_y);
@@ -245,16 +278,11 @@ void NewTextBox::go_next_line()
 
 	if(current_line_index >= max_lines_per_page - 1)
 	{
-		// scroll_down
 		scroll_down();
 		return;
 	}
 	else
-	{
-		// Increment current_page_line_index
 		current_page_line_index++;
-		std::cout << "current_page_line_index: " << current_page_line_index << std::endl;
-	}
 
 	current_line_index++;
 	if(current_char_index > texts[current_line_index]->text.size() - 1)
@@ -273,8 +301,6 @@ void NewTextBox::go_prev_line()
 	else
 	{
 		current_page_line_index = 0;
-
-		// scroll_up
 		scroll_up();
 		return;
 	}

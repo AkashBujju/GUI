@@ -35,7 +35,7 @@ int get_org_x(float x, const int scr_width)
     if (x > 0)
         val = scr_width / 2 + (x * scr_width / 2);
     else
-        val = -(x * scr_width / 2);
+        val = (scr_width / 2) + (x * scr_width / 2);
 
     return val;
 }

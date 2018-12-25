@@ -56,11 +56,11 @@ int main()
 
 	save_btn.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
 	load_btn.init("Load", scr_width, scr_height, "Consolas.ttf", 25);
-	save_btn.set_x(-0.4f, scr_width);
-	save_btn.set_y(0.6f, scr_height);
+	save_btn.set_x(+0.8f, scr_width);
+	save_btn.set_y(+0.85f, scr_height);
 
-	load_btn.set_x(-0.2f, scr_width);
-	load_btn.set_y(0.6f, scr_height);
+	load_btn.set_x(+0.8f, scr_width);
+	load_btn.set_y(+0.7f, scr_height);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -136,11 +136,11 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		ntb.go_next_line();
 	else if(esc_state == GLFW_PRESS)
 		glfwSetWindowShouldClose(win, true);
+	else if(return_state == GLFW_PRESS)
+		ntb.add_new_line();
 	/*
 	else if(erase_state == GLFW_PRESS)
 		tb.erase();
-	else if(return_state == GLFW_PRESS)
-		tb.add_new_line();
 	*/
 }
 
