@@ -1,6 +1,5 @@
 #ifndef MY_TEXT_BOX_H
 #define MY_TEXT_BOX_H
-
 #include <iostream>
 #include <vector>
 #include <rect.h>
@@ -8,13 +7,12 @@
 #include <utils.h>
 #include <fstream>
 #include <deque>
-
 struct Text
 {
 	Font font;
-	std::string text;
-	glm::vec2 pos;
-	glm::vec2 norm_pos;
+	std::string name;
+	unsigned int age;
+	
+	Hello, World;
+	C++;
 };
-
-#endif

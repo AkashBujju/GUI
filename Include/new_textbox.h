@@ -22,18 +22,21 @@ struct NewTextBox
 	Rect box;
 	Rect cursor;
 	std::vector<Text*> texts;
+	std::deque<Text*> page;
 
 	glm::vec2 up_left_org;
 	glm::vec2 box_dims_org;
 
 	int current_line_index = 0;
 	int current_char_index = 0;
+	int current_page_line_index = 0;
 
 	unsigned int font_size;
 	unsigned int scr_width = 0;
 	unsigned int scr_height = 0;
 	unsigned int text_gap_x_org = 10;
 	unsigned int text_gap_y_org = 10;
+	unsigned int max_lines_per_page = 2;
 	float text_gap_x_norm = 0;
 	float text_gap_y_norm = 0;
 	float cache_font_width_norm = 0;
@@ -53,7 +56,57 @@ struct NewTextBox
 	void insert(char ch);
 	void save(std::string f_name);
 	void load(std::string f_name);
+	void scroll_down();
+	void scroll_up();
 };
+
+void NewTextBox::scroll_down()
+{
+	page.pop_front();
+	current_line_index++;
+	page.push_back(texts[current_line_index]);
+
+	float start_y = up_left_org.y + box_dims_org.y;
+	start_y -= font_size;
+	float gap = next_y_norm * scr_height / 2.0f;
+
+	for(unsigned int i = 0; i < page.size(); i++)
+	{
+		Text *ft = page[i];
+		ft->pos.y = start_y;	
+
+		start_y -= gap;
+	}
+
+	if(current_char_index > texts[current_line_index]->text.size() - 1)
+	{
+		set_char_max();
+	}
+}
+
+void NewTextBox::scroll_up()
+{
+	page.pop_back();
+	current_line_index--;
+	page.push_front(texts[current_line_index]);
+
+	float start_y = up_left_org.y + box_dims_org.y;
+	start_y -= font_size;
+	float gap = next_y_norm * scr_height / 2.0f;
+
+	for(unsigned int i = 0; i < page.size(); i++)
+	{
+		Text *ft = page[i];
+		ft->pos.y = start_y;	
+
+		start_y -= gap;
+	}
+
+	if(current_char_index > texts[current_line_index]->text.size() - 1)
+	{
+		set_char_max();
+	}
+}
 
 void NewTextBox::save(std::string f_name)
 {
@@ -89,6 +142,7 @@ void NewTextBox::load(std::string f_name)
 		free(texts[i]);	
 
 	texts.clear();
+	page.clear();
 
 	std::cout << "loading..." << std::endl;
 	while(!read.eof())
@@ -100,6 +154,8 @@ void NewTextBox::load(std::string f_name)
 			add_text(line);
 		}
 	}
+
+	std::cout << "pages.size(): " << page.size() << std::endl;
 
 	read.close();
 }
@@ -187,6 +243,19 @@ void NewTextBox::go_next_line()
 	if(current_line_index == texts.size() - 1)
 		return;
 
+	if(current_line_index >= max_lines_per_page - 1)
+	{
+		// scroll_down
+		scroll_down();
+		return;
+	}
+	else
+	{
+		// Increment current_page_line_index
+		current_page_line_index++;
+		std::cout << "current_page_line_index: " << current_page_line_index << std::endl;
+	}
+
 	current_line_index++;
 	if(current_char_index > texts[current_line_index]->text.size() - 1)
 		set_char_max();
@@ -198,6 +267,17 @@ void NewTextBox::go_prev_line()
 {
 	if(current_line_index == 0)
 		return;
+
+	if(current_page_line_index > 0)
+		current_page_line_index--;
+	else
+	{
+		current_page_line_index = 0;
+
+		// scroll_up
+		scroll_up();
+		return;
+	}
 
 	current_line_index--;
 	if(current_char_index > texts[current_line_index]->text.size())
@@ -227,6 +307,11 @@ void NewTextBox::add_text(std::string text)
 	t->font.init_font(text, font_name, font_size);
 	texts.push_back(t);
 
+	if(texts.size() <= max_lines_per_page)
+	{
+		page.push_back(t);
+	}
+
 	if(texts.size() == 1)
 	{
 		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
@@ -244,6 +329,12 @@ void NewTextBox::add_text(std::string text)
 	{
 		next_y_norm = (texts[0]->pos.y - texts[1]->pos.y) / (float)scr_height;
 		next_y_norm *= 2.0f;
+
+		float tmp = (box_dims_org.y * 2 / (float)scr_height);
+		tmp = tmp / (float)next_y_norm;
+		tmp *= 2.0f;
+
+		max_lines_per_page = (unsigned int)tmp;
 	}
 }
 
@@ -252,10 +343,12 @@ void NewTextBox::draw()
 	box.draw();
 	cursor.draw();
 
-	for(unsigned int i = 0; i < texts.size(); i++)
+	for(unsigned int i = 0; i < page.size(); i++)
 	{
-		texts[i]->font.render_text(texts[i]->text, texts[i]->pos.x, texts[i]->pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+		page[i]->font.render_text(page[i]->text, page[i]->pos.x, page[i]->pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+		// std::cout << i << " ";
 	}
+	// std::cout << std::endl;
 }
 
 #endif
