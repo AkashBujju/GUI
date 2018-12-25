@@ -76,23 +76,22 @@ void NewTextBox::add_new_line()
 	texts.insert(it + current_line_index + 1, t);
 
 	std::deque<Text*>::iterator it_2 = page.begin();
-	page.pop_back();
+	if(texts.size() - 1 >= max_lines_per_page)
+		page.pop_back();
 	page.insert(it_2 + current_page_line_index + 1, t);
 
+	float gap = next_y_norm * scr_height / 2.0f;
 	unsigned int tmp_li = current_line_index + 1;
-	float tmp_y = 0;
-	tmp_y = texts[current_line_index]->pos.y;
-	tmp_y -= next_y_norm * scr_height;
+	t->pos.y = texts[current_line_index]->pos.y;
+	t->pos.y -= gap;
 
-	current_line_index += 1;
+	current_line_index += 2;
 	for(unsigned int i = current_line_index; i < texts.size(); i++)
-	{
-		tmp_y = texts[i]->pos.y;
-		tmp_y -= next_y_norm * scr_height;
-	}
+		texts[i]->pos.y -= gap;
 
 	current_line_index = tmp_li;
 	cursor.pos.y -= next_y_norm;
+	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm;
 	current_char_index = 0;
 }
 

@@ -1,5 +1,6 @@
 #ifndef MY_TEXT_BOX_H
 #define MY_TEXT_BOX_H
+
 #include <iostream>
 #include <vector>
 #include <rect.h>
@@ -7,12 +8,60 @@
 #include <utils.h>
 #include <fstream>
 #include <deque>
+
 struct Text
 {
 	Font font;
-	std::string name;
-	unsigned int age;
-	
-	Hello, World;
-	C++;
+	std::string text;
+	glm::vec2 pos;
+	glm::vec2 norm_pos;
+};
+
+struct TextBox
+{
+	Rect box;
+	Rect cursor;
+	glm::vec2 up_left;
+	glm::vec2 current_line;
+	std::vector<Text*> texts;
+	std::deque<Text*> page;
+
+	int max_lines_per_page = 0;
+	int current_page_line_index = 0;
+
+	Font cache_font;
+	unsigned int cache_font_width = 0;
+	unsigned int cache_font_height = 0;
+
+	std::string font_name;
+	unsigned int font_size;
+
+	void draw();
+	void init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h);
+	void add_text(std::string text);
+
+	float get_norm_char_w();
+	float get_norm_char_h();
+	void goto_next_char();
+	void goto_next_line();
+	void goto_prev_char();
+	void goto_prev_line();
+	void insert(char ch);
+	void erase();
+	void add_new_line();
+
+	void save(std::string f_name);
+	void load(std::string f_name);
+
+	~TextBox();
+private:
+	unsigned int scr_width = 0;
+	unsigned int scr_height = 0;
+	int current_line_index = 0;
+	int current_char_index = 0;
+	void set_text_pos_x(Text *text, float x, int scr_width);
+	void set_text_pos_y(Text *text, float y, int scr_height);
+	void check_and_set_to_max_or_min();
+	void scroll_down();
+	void scroll_up();
 };
