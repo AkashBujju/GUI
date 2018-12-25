@@ -38,6 +38,7 @@ struct NewTextBox
 	float text_gap_y_norm = 0;
 	float cache_font_width_norm = 0;
 	float cache_font_height_norm = 0;
+	float next_y_norm = 0;
 
 	std::string font_name;
 
@@ -49,7 +50,69 @@ struct NewTextBox
 	void go_next_line();
 	void go_prev_line();
 	void set_char_max();
+	void insert(char ch);
+	void save(std::string f_name);
+	void load(std::string f_name);
 };
+
+void NewTextBox::save(std::string f_name)
+{
+	std::ofstream wr(f_name);
+	if(!wr)
+	{
+		std::cout << "Cannot open file: " << f_name << " for writing" << std::endl;
+		return;
+	}
+
+	for(unsigned int i = 0; i < texts.size(); i++)
+	{
+		wr << texts[i]->text;
+		if(i != texts.size() - 1)
+			wr << "\n";
+	}
+
+	wr.close();
+}
+
+void NewTextBox::load(std::string f_name)
+{
+	std::ifstream read;
+	read.open(f_name);
+	if(!read)
+	{
+		std::cout << "Could not open file: " << f_name << " for reading" << std::endl;
+		return;
+	}
+
+	// Free the existing memory
+	for(unsigned int i = 0; i < texts.size(); i++)
+		free(texts[i]);	
+
+	texts.clear();
+
+	std::cout << "loading..." << std::endl;
+	while(!read.eof())
+	{
+		std::string line;
+		if(!read.eof())
+		{
+			getline(read, line);
+			add_text(line);
+		}
+	}
+
+	read.close();
+}
+
+void NewTextBox::insert(char ch)
+{
+	std::string tmp;
+	tmp.push_back(ch);
+	texts[current_line_index]->text.insert(current_char_index, tmp);
+
+	current_char_index++;
+	cursor.pos.x += cache_font_width_norm * 2.0f;
+}
 
 void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
 {
@@ -128,7 +191,7 @@ void NewTextBox::go_next_line()
 	if(current_char_index > texts[current_line_index]->text.size() - 1)
 		set_char_max();
 
-	cursor.pos.y -= (4.0f * cache_font_height_norm + 1.0f * text_gap_y_norm);
+	cursor.pos.y -= next_y_norm;
 }
 
 void NewTextBox::go_prev_line()
@@ -140,7 +203,7 @@ void NewTextBox::go_prev_line()
 	if(current_char_index > texts[current_line_index]->text.size())
 		set_char_max();
 
-	cursor.pos.y += (4.0f * cache_font_height_norm + 1.0f * text_gap_y_norm);
+	cursor.pos.y += next_y_norm;
 }
 
 void NewTextBox::set_char_max()
@@ -175,6 +238,12 @@ void NewTextBox::add_text(std::string text)
 		Text *prev = texts[texts.size() - 2];
 		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
 		t->pos.y = prev->pos.y - font_size - text_gap_y_org;
+	}
+
+	if(texts.size() == 2)
+	{
+		next_y_norm = (texts[0]->pos.y - texts[1]->pos.y) / (float)scr_height;
+		next_y_norm *= 2.0f;
 	}
 }
 

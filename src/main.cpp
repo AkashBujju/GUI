@@ -104,12 +104,12 @@ void update()
 	if(mouse_clicked && save_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		save_btn.rect.push();	
-		// tb.save("demo.txt");
+		ntb.save("demo.txt");
 	}
 	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		load_btn.rect.push();	
-		// tb.load("sample_c++.cpp");
+		ntb.load("demo.txt");
 	}
 }
 
@@ -162,7 +162,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
 	char ch = (char)codepoint;
-	// tb.insert(ch);
+	ntb.insert(ch);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
