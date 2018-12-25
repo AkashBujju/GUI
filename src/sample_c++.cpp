@@ -225,19 +225,15 @@ void TextBox::goto_prev_line()
 		return;
 
 	current_page_line_index--;
-	std::cout << "pli: " << current_page_line_index << std::endl;
 	if(current_page_line_index == -1)
 	{
 		current_page_line_index = 0;
 		scroll_up();
 
-		std::cout << "li: " << current_line_index << std::endl;
-
 		return;
 	}
 
 	current_line_index--;
-	std::cout << "li: " << current_line_index << std::endl;
 	cursor.pos.y = texts[current_line_index]->norm_pos.y + cursor.y_scale / 2.0f;
 
 	check_and_set_to_max_or_min();
@@ -251,17 +247,13 @@ void TextBox::goto_next_line()
 	if(current_page_line_index < max_lines_per_page - 1)
 		current_page_line_index++;
 
-	std::cout << "pli: " << current_page_line_index << std::endl;
-
 	if(current_line_index >= max_lines_per_page - 1) // scroll down
 	{
 		scroll_down();
-		std::cout << "li: " << current_line_index << std::endl;
 		return;
 	}
 
 	current_line_index++;
-	std::cout << "li: " << current_line_index << std::endl;
 	cursor.pos.y = texts[current_line_index]->norm_pos.y + cursor.y_scale / 2.0f;
 
 	check_and_set_to_max_or_min();
@@ -269,34 +261,50 @@ void TextBox::goto_next_line()
 
 void TextBox::scroll_up()
 {
-	page.pop_back();
-	current_line_index--;
-	page.push_front(texts[current_line_index]);
-
+	/* Move every page text below */
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
 		Text *ft = page[i];
-		current_line.y = up_left.y;
-		current_line.y -= i * (cache_font_height * 4.0f) / (float)scr_height;
+		current_line.y = ft->norm_pos.y;
+		current_line.y -= (cache_font_height * 2.0f) / (float)scr_height;
 		set_text_pos_y(ft, current_line.y, scr_height);
 	}
+
+	page.pop_back();
+
+	current_line_index--;
+	page.push_front(texts[current_line_index]);
+
+	Text *ft = page[0];
+	current_line.y = page[1]->norm_pos.y;
+	current_line.y += (cache_font_height * 3.3f) / (float)scr_height;
+	current_line.y += (cache_font_height * 3.3f) / (float)scr_height;
+	set_text_pos_y(ft, current_line.y, scr_height);
 
 	check_and_set_to_max_or_min();
 }
 
 void TextBox::scroll_down()
 {
-	page.pop_front();
-	current_line_index++;
-	page.push_back(texts[current_line_index]);
-
+	/* Move every page text above */
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
 		Text *ft = page[i];
-		current_line.y = up_left.y;
-		current_line.y -= i * (cache_font_height * 4.0f) / (float)scr_height;
+		current_line.y = ft->norm_pos.y;
+		current_line.y += (cache_font_height * 3.305f) / (float)scr_height;
+		current_line.y += (cache_font_height * 3.305f) / (float)scr_height;
 		set_text_pos_y(ft, current_line.y, scr_height);
 	}
+
+	page.pop_front();
+
+	current_line_index++;
+	page.push_back(texts[current_line_index]);
+
+	Text *ft = page[page.size() - 1];
+	current_line.y = page[page.size() - 2]->norm_pos.y;
+	current_line.y -= (cache_font_height * 2.0f) / (float)scr_height;
+	set_text_pos_y(ft, current_line.y, scr_height);
 
 	check_and_set_to_max_or_min();
 }
@@ -413,8 +421,7 @@ void TextBox::set_text_pos_x(Text *text, float x, int scr_width)
 
 void TextBox::set_text_pos_y(Text *text, float y, int scr_height)
 {
-	// float norm_h = text->font.get_height(text->text) / (float)scr_height;
-	float norm_h = cache_font_height / (float)scr_height;
+	float norm_h = text->font.get_height(text->text) / (float)scr_height;
 	y -= 2 * norm_h;
 	text->norm_pos.y = y;
 

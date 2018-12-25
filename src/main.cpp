@@ -9,12 +9,7 @@
 #include <shader.h>
 #include <init.h>
 #include <button.h>
-#include <circle.h>
-#include <image.h>
-#include <drop_down.h>
-#include <utils.h>
-#include <rect.h>
-#include <text_box.h>
+#include <new_textbox.h>
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -29,8 +24,8 @@ bool mouse_clicked = false;
 GLFWwindow *window = nullptr;
 
 // DropDown d;
-TextBox tb;
 Button save_btn, load_btn;
+NewTextBox ntb;
 
 int main()
 {
@@ -54,7 +49,10 @@ int main()
 	d.set_to(2, scr_width, scr_height);
 	*/
 
-	tb.init("Consolas.ttf", 20, scr_width, scr_height);
+	ntb.init("Consolas.ttf", 20, scr_width, scr_height);
+	ntb.add_text("Hello, World");
+	ntb.add_text("This is C++");
+	ntb.add_text("And OpenGL");
 
 	save_btn.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
 	load_btn.init("Load", scr_width, scr_height, "Consolas.ttf", 25);
@@ -91,37 +89,34 @@ int main()
 void update()
 {
 	/*
-	if(mouse_clicked && d.image.is_on(mouse_x, mouse_y))
-	{
+		if(mouse_clicked && d.image.is_on(mouse_x, mouse_y))
+		{
 		d.toggle_box();
-	}
-	if(mouse_clicked)
-	{
+		}
+		if(mouse_clicked)
+		{
 		d.switch_to(mouse_x, mouse_y, scr_width, scr_height);
-	}
-	*/
+		}
+		*/
 
 	save_btn.update();
 
 	if(mouse_clicked && save_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		save_btn.rect.push();	
-		tb.save("demo.txt");
+		// tb.save("demo.txt");
 	}
 	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		load_btn.rect.push();	
-		tb.load("demo.txt");
+		// tb.load("sample_c++.cpp");
 	}
 }
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 {
-	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(win, true);
-
 	int right_state, left_state, up_state, down_state;
-	int erase_state, return_state;
+	int erase_state, return_state, esc_state;
 
 	right_state = glfwGetKey(window, GLFW_KEY_RIGHT);
 	left_state = glfwGetKey(window, GLFW_KEY_LEFT);
@@ -129,25 +124,31 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 	down_state = glfwGetKey(window, GLFW_KEY_DOWN);
 	erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
 	return_state = glfwGetKey(window, GLFW_KEY_ENTER);
+	esc_state = glfwGetKey(window, GLFW_KEY_ESCAPE);
 
 	if(right_state == GLFW_PRESS)
-		tb.goto_next_char();
-   else if(left_state == GLFW_PRESS)
-		tb.goto_prev_char();
-   else if(up_state == GLFW_PRESS)
-		tb.goto_prev_line();
+		ntb.go_next_char();
+	else if(left_state == GLFW_PRESS)
+		ntb.go_prev_char();
+	else if(up_state == GLFW_PRESS)
+		ntb.go_prev_line();
 	else if(down_state == GLFW_PRESS)
-		tb.goto_next_line();
+		ntb.go_next_line();
+	else if(esc_state == GLFW_PRESS)
+		glfwSetWindowShouldClose(win, true);
+	/*
 	else if(erase_state == GLFW_PRESS)
 		tb.erase();
 	else if(return_state == GLFW_PRESS)
 		tb.add_new_line();
+	*/
 }
 
 void draw()
 {
 	// d.draw();
-	tb.draw();
+	// tb.draw();
+	ntb.draw();
 	save_btn.draw();
 	load_btn.draw();
 }
@@ -161,7 +162,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
 	char ch = (char)codepoint;
-	tb.insert(ch);
+	// tb.insert(ch);
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
