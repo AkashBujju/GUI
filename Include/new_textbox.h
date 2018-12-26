@@ -10,6 +10,13 @@
 #include <fstream>
 #include <deque>
 
+enum class Mode
+{
+	NONE,
+	ESC,
+	EDIT
+};
+
 struct Text
 {
 	Font font;
@@ -21,8 +28,11 @@ struct NewTextBox
 {
 	Rect box;
 	Rect cursor;
+	Rect left_indent_bar;
 	std::vector<Text*> texts;
 	std::deque<Text*> page;
+
+	Mode mode = Mode::NONE;
 
 	glm::vec2 up_left_org;
 	glm::vec2 box_dims_org;
@@ -60,7 +70,13 @@ struct NewTextBox
 	void scroll_up();
 	void add_new_line();
 	void erase();
+	void goto_esc_mode();
 };
+
+void NewTextBox::goto_esc_mode()
+{
+	mode = Mode::ESC;
+}
 
 void NewTextBox::erase()
 {
@@ -80,7 +96,7 @@ void NewTextBox::add_new_line()
 	t->font.init_program(scr_width, scr_height);
 	t->font.make_buffer();
 	t->font.init_font(t->text, font_name, font_size);
-	t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
+	t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org + left_indent_bar.x_scale * scr_width;
 
 	std::vector<Text*>::iterator it = texts.begin();
 	texts.insert(it + current_line_index + 1, t);
@@ -101,7 +117,7 @@ void NewTextBox::add_new_line()
 
 	current_line_index = tmp_li;
 	cursor.pos.y -= next_y_norm;
-	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm;
+	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	current_char_index = 0;
 }
 
@@ -223,6 +239,8 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	this->font_name = font_name;
 	this->font_size = font_size;
 
+	mode = Mode::EDIT;
+
 	text_gap_x_norm = text_gap_x_org / (float)scr_width;
 	text_gap_y_norm = text_gap_y_org / (float)scr_height;
 
@@ -232,6 +250,13 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	box.x_scale = 0.8f;
 	box.y_scale = 0.8f;
 	box.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	left_indent_bar.init();
+	left_indent_bar.pos.x = box.pos.x - box.x_scale;
+	left_indent_bar.pos.y = +0.1f;
+	left_indent_bar.x_scale = 0.05f / 3.0f;
+	left_indent_bar.y_scale = 0.8f;
+	left_indent_bar.color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
 
 	int tmp_x = get_org_x(box.pos.x, scr_width);
 	int tmp_y = get_org_y(box.pos.y, scr_height);
@@ -257,7 +282,7 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	cache_font_height_norm = cache_text.font.get_height("A") / (float)scr_height;
 
 	cursor.init();
-	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm;
+	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	cursor.pos.y = box.pos.y + box.y_scale - text_gap_y_norm - cache_font_height_norm;
 	cursor.x_scale = cache_font_width_norm;
 	cursor.y_scale = cache_font_height_norm * 2.0f;
@@ -325,7 +350,7 @@ void NewTextBox::go_prev_line()
 
 void NewTextBox::set_char_max()
 {
-	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm;
+	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	current_char_index = 0;
 
 	unsigned int _sz = texts[current_line_index]->text.size();
@@ -351,14 +376,14 @@ void NewTextBox::add_text(std::string text)
 
 	if(texts.size() == 1)
 	{
-		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
+		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org + left_indent_bar.x_scale * scr_width;
 		t->pos.y = up_left_org.y + box_dims_org.y;
 		t->pos.y -= font_size;
 	}
 	else
 	{
 		Text *prev = texts[texts.size() - 2];
-		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org;
+		t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org + left_indent_bar.x_scale * scr_width;
 		t->pos.y = prev->pos.y - font_size - text_gap_y_org;
 	}
 
@@ -379,13 +404,12 @@ void NewTextBox::draw()
 {
 	box.draw();
 	cursor.draw();
+	left_indent_bar.draw();
 
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
-		page[i]->font.render_text(page[i]->text, page[i]->pos.x, page[i]->pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
-		// std::cout << i << " ";
+		page[i]->font.render_text(page[i]->text, page[i]->pos.x, page[i]->pos.y, 1.0f, glm::vec3(0.05f, 0.05f, 0.05f));
 	}
-	// std::cout << std::endl;
 }
 
 #endif

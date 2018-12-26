@@ -83,6 +83,7 @@ int main()
 	}
 
 	glfwTerminate();
+	std::cout << "Ended successfully" << std::endl;
 	return 0;
 }
 
@@ -109,7 +110,7 @@ void update()
 	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		load_btn.rect.push();	
-		ntb.load("demo.txt");
+		ntb.load("sample_c++.cpp");
 	}
 }
 
@@ -135,7 +136,7 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 	else if(down_state == GLFW_PRESS)
 		ntb.go_next_line();
 	else if(esc_state == GLFW_PRESS)
-		glfwSetWindowShouldClose(win, true);
+		ntb.goto_esc_mode();
 	else if(return_state == GLFW_PRESS)
 		ntb.add_new_line();
 	else if(erase_state == GLFW_PRESS)
