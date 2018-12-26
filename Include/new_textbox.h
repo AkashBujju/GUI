@@ -29,6 +29,7 @@ struct NewTextBox
 	Rect box;
 	Rect cursor;
 	Rect left_indent_bar;
+	Rect cmd_bar;
 	std::vector<Text*> texts;
 	std::deque<Text*> page;
 
@@ -253,10 +254,17 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 
 	left_indent_bar.init();
 	left_indent_bar.pos.x = box.pos.x - box.x_scale;
-	left_indent_bar.pos.y = +0.1f;
+	left_indent_bar.pos.y = box.pos.y;
 	left_indent_bar.x_scale = 0.05f / 3.0f;
-	left_indent_bar.y_scale = 0.8f;
+	left_indent_bar.y_scale = box.y_scale;
 	left_indent_bar.color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+
+	cmd_bar.init();
+	cmd_bar.x_scale = box.x_scale + left_indent_bar.x_scale / 2.0f;
+	cmd_bar.y_scale = left_indent_bar.x_scale * 2.0f;
+	cmd_bar.pos.x = box.pos.x - left_indent_bar.x_scale / 2.0f;
+	cmd_bar.pos.y = box.pos.y - box.y_scale - cmd_bar.y_scale;
+	cmd_bar.color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
 	int tmp_x = get_org_x(box.pos.x, scr_width);
 	int tmp_y = get_org_y(box.pos.y, scr_height);
@@ -405,6 +413,7 @@ void NewTextBox::draw()
 	box.draw();
 	cursor.draw();
 	left_indent_bar.draw();
+	cmd_bar.draw();
 
 	for(unsigned int i = 0; i < page.size(); i++)
 	{
