@@ -139,13 +139,15 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		else if(down_state == GLFW_PRESS)
 			ntb.go_next_line();
 	}
-
-	if(esc_state == GLFW_PRESS)
-		ntb.goto_esc_mode();
-	else if(return_state == GLFW_PRESS)
-		ntb.add_new_line();
-	else if(erase_state == GLFW_PRESS)
-		ntb.erase();
+	else if(ntb.mode == Mode::EDIT)
+	{
+		if(esc_state == GLFW_PRESS)
+			ntb.goto_esc_mode();
+		else if(return_state == GLFW_PRESS)
+			ntb.add_new_line();
+		else if(erase_state == GLFW_PRESS)
+			ntb.erase();
+	}
 }
 
 void draw()

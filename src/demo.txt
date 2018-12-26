@@ -40,6 +40,8 @@ struct TextBox
 	void init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h);
 	void add_text(std::string text);
 
+ void demo_line();
+
 	float get_norm_char_w();
 	float get_norm_char_h();
 	void goto_next_char();
@@ -64,7 +66,6 @@ private:
 	void check_and_set_to_max_or_min();
 	void scroll_down();
 	void scroll_up();
- void testing_program();
 };
 
 void TextBox::save(std::string f_name)

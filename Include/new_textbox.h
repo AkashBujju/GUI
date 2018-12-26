@@ -145,6 +145,9 @@ void NewTextBox::add_new_line()
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
 	current_char_index = 0;
+
+	if(current_page_line_index < max_lines_per_page - 1)
+		current_page_line_index++;
 }
 
 void NewTextBox::scroll_down()
@@ -377,7 +380,6 @@ void NewTextBox::go_next_line()
 
 	if(current_page_line_index >= max_lines_per_page - 1)
 	{
-		std::cout << "Scrolling down" << std::endl;
 		scroll_down();
 		return;
 	}
@@ -397,12 +399,11 @@ void NewTextBox::go_prev_line()
 	if(current_line_index == 0)
 		return;
 
-	if(current_page_line_index >= 0)
+	if(current_page_line_index > 0)
 		current_page_line_index--;
 	else
 	{
 		current_page_line_index = 0;
-		std::cout << "Scrolling up" << std::endl;
 		scroll_up();
 		return;
 	}
