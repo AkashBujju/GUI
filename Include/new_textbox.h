@@ -82,6 +82,21 @@ struct NewTextBox
 void NewTextBox::erase_line()
 {
 	// @Incomplete ... 
+
+	std::vector<Text*>::iterator it = texts.begin();
+	texts.erase(it + current_line_index);
+
+	std::deque<Text*>::iterator it2 = page.begin();
+	page.erase(it2 + current_page_line_index);
+
+	float gap = next_y_norm * scr_height / 2.0f;
+	for(unsigned int i = current_line_index; i < texts.size(); i++)
+		texts[i]->pos.y += gap;
+
+	if(texts.size() > max_lines_per_page - 1)
+	{
+		page.push_back(texts[texts.size() - 1]);
+	}
 }
 
 void NewTextBox::goto_edit_mode()

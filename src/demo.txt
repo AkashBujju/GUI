@@ -2,7 +2,6 @@ And OpenGL
 This is C++ Oh Oh
 Hello, World .... !!!!!!!!
 
-And OpenGL
 This is C++ Oh Oh
 Hello, World .... !!!!!!!!
 

@@ -118,6 +118,7 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 {
 	int right_state, left_state, up_state, down_state;
 	int erase_state, return_state, esc_state;
+	int erase_line_state;
 
 	right_state = glfwGetKey(window, GLFW_KEY_L);
 	left_state = glfwGetKey(window, GLFW_KEY_H);
@@ -126,6 +127,7 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 	erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
 	return_state = glfwGetKey(window, GLFW_KEY_ENTER);
 	esc_state = glfwGetKey(window, GLFW_KEY_ESCAPE);
+	erase_line_state = glfwGetKey(window, GLFW_KEY_D);
 
 	if(ntb.mode == Mode::ESC)
 	{
@@ -137,6 +139,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 			ntb.go_prev_line();
 		else if(down_state == GLFW_PRESS)
 			ntb.go_next_line();
+		else if(erase_line_state == GLFW_PRESS)
+			ntb.erase_line();
 	}
 	else if(ntb.mode == Mode::EDIT)
 	{
