@@ -34,6 +34,8 @@ struct NewTextBox
 	std::deque<Text*> page;
 
 	Mode mode = Mode::NONE;
+	Text mode_text;
+	std::string mode_text_str;
 
 	glm::vec2 up_left_org;
 	glm::vec2 box_dims_org;
@@ -289,6 +291,19 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	cache_font_width_norm = cache_text.font.get_width("A") / (float)scr_width;
 	cache_font_height_norm = cache_text.font.get_height("A") / (float)scr_height;
 
+	mode_text_str = "ESC";
+	mode_text.font.init_lib();
+	mode_text.font.init_program(scr_width, scr_height);
+	mode_text.font.make_buffer();
+	mode_text.font.init_font(mode_text_str, font_name, font_size);
+	mode_text.pos.x = get_org_x(cmd_bar.pos.x + cmd_bar.x_scale, scr_width) - 2.0f * mode_text.font.get_width(mode_text_str);
+	float tmp_mode_text_y = get_org_y(cmd_bar.pos.y, scr_height);
+	if(tmp_mode_text_y < 0)
+		tmp_mode_text_y = abs(tmp_mode_text_y);
+	else
+		tmp_mode_text_y = tmp_mode_text_y + (scr_height / 2.0f);
+	mode_text.pos.y = tmp_mode_text_y - mode_text.font.get_height(mode_text_str) / 2.0f;
+
 	cursor.init();
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	cursor.pos.y = box.pos.y + box.y_scale - text_gap_y_norm - cache_font_height_norm;
@@ -419,6 +434,8 @@ void NewTextBox::draw()
 	{
 		page[i]->font.render_text(page[i]->text, page[i]->pos.x, page[i]->pos.y, 1.0f, glm::vec3(0.05f, 0.05f, 0.05f));
 	}
+
+	mode_text.font.render_text(mode_text_str, mode_text.pos.x, mode_text.pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 #endif
