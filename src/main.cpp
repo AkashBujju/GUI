@@ -50,9 +50,6 @@ int main()
 	*/
 
 	ntb.init("Consolas.ttf", 20, scr_width, scr_height);
-	ntb.add_text("And OpenGL");
-	ntb.add_text("This is C++ Oh Oh");
-	ntb.add_text("Hello, World .... !!!!!!!!");
 
 	save_btn.init("Save", scr_width, scr_height, "Consolas.ttf", 25);
 	load_btn.init("Load", scr_width, scr_height, "Consolas.ttf", 25);
@@ -105,12 +102,12 @@ void update()
 	if(mouse_clicked && save_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		save_btn.rect.push();	
-		ntb.save("demo.txt");
+		ntb.save("demo.cpp");
 	}
 	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		load_btn.rect.push();	
-		ntb.load("demo.txt");
+		ntb.load("demo.cpp");
 	}
 }
 

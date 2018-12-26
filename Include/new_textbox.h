@@ -81,8 +81,6 @@ struct NewTextBox
 
 void NewTextBox::erase_line()
 {
-	// @Incomplete ... 
-
 	std::vector<Text*>::iterator it = texts.begin();
 	texts.erase(it + current_line_index);
 
@@ -391,6 +389,9 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	thin_cursor.y_scale = cache_font_height_norm * 2.0f;
 	thin_cursor.x_scale = 0.002f;
 	thin_cursor.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	add_text("");
+	add_text("");
 }
 
 void NewTextBox::go_next_char()
