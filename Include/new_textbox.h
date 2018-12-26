@@ -59,7 +59,17 @@ struct NewTextBox
 	void scroll_down();
 	void scroll_up();
 	void add_new_line();
+	void erase();
 };
+
+void NewTextBox::erase()
+{
+	if(current_char_index == 0)
+		return;
+
+	texts[current_line_index]->text.erase(current_char_index - 1, 1);
+	go_prev_char();
+}
 
 void NewTextBox::add_new_line()
 {
@@ -159,6 +169,7 @@ void NewTextBox::save(std::string f_name)
 			wr << "\n";
 	}
 
+	std::cout << "saved: " << f_name << std::endl;
 	wr.close();
 }
 
@@ -190,6 +201,7 @@ void NewTextBox::load(std::string f_name)
 		}
 	}
 
+	std::cout << "loaded: " << f_name << std::endl;
 	read.close();
 }
 
@@ -275,7 +287,7 @@ void NewTextBox::go_next_line()
 	if(current_line_index == texts.size() - 1)
 		return;
 
-	if(current_line_index >= max_lines_per_page - 1)
+	if(current_page_line_index >= max_lines_per_page - 1)
 	{
 		scroll_down();
 		return;

@@ -13,12 +13,14 @@ struct Text
 {
 	Font font;
 	std::string text;
+ Isertef
 	glm::vec2 pos;
 	glm::vec2 norm_pos;
 };
 
 struct TextBox
 {
+ Demo d;
 	Rect box;
 	Rect cursor;
 	glm::vec2 up_left;
@@ -28,6 +30,7 @@ struct TextBox
 
 	int max_lines_per_page = 0;
 	int current_page_line_index = 0;
+ daljdklasjdljasldkjaslkdjlaksjdlkasjdlajsldkjaldjaldal
 
 	Font cache_font;
 	unsigned int cache_font_width = 0;

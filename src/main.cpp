@@ -18,7 +18,7 @@ void character_callback(GLFWwindow* window, unsigned int codepoint);
 void update();
 void draw();
 
-const int scr_width = 1024, scr_height = 800;
+const int scr_width = 1400, scr_height = 800;
 double mouse_x = 0, mouse_y = 0;
 bool mouse_clicked = false;
 GLFWwindow *window = nullptr;
@@ -138,10 +138,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		glfwSetWindowShouldClose(win, true);
 	else if(return_state == GLFW_PRESS)
 		ntb.add_new_line();
-	/*
 	else if(erase_state == GLFW_PRESS)
-		tb.erase();
-	*/
+		ntb.erase();
 }
 
 void draw()
