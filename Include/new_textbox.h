@@ -28,6 +28,7 @@ struct NewTextBox
 {
 	Rect box;
 	Rect cursor;
+	Rect thin_cursor;
 	Rect left_indent_bar;
 	Rect cmd_bar;
 	std::vector<Text*> texts;
@@ -74,15 +75,32 @@ struct NewTextBox
 	void add_new_line();
 	void erase();
 	void goto_esc_mode();
+	void goto_edit_mode();
+	void erase_line();
 };
+
+void NewTextBox::erase_line()
+{
+	// @Incomplete ... 
+}
+
+void NewTextBox::goto_edit_mode()
+{
+	mode = Mode::EDIT;
+	mode_text_str = "EDIT";
+}
 
 void NewTextBox::goto_esc_mode()
 {
 	mode = Mode::ESC;
+	mode_text_str = "ESC";
 }
 
 void NewTextBox::erase()
 {
+	if(mode == Mode::ESC)
+		return;
+
 	if(current_char_index == 0)
 		return;
 
@@ -92,6 +110,9 @@ void NewTextBox::erase()
 
 void NewTextBox::add_new_line()
 {
+	if(mode == Mode::ESC)
+		return;
+
 	// Insert a blank line below current_line_index
 	Text *t = new Text;
 	t->text = "";
@@ -120,7 +141,9 @@ void NewTextBox::add_new_line()
 
 	current_line_index = tmp_li;
 	cursor.pos.y -= next_y_norm;
+	thin_cursor.pos.y -= next_y_norm;
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
+	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
 	current_char_index = 0;
 }
 
@@ -226,12 +249,20 @@ void NewTextBox::load(std::string f_name)
 
 void NewTextBox::insert(char ch)
 {
+	if(mode == Mode::ESC)
+	{
+		if(ch == 'i')
+			goto_edit_mode();
+		return;
+	}
+
 	std::string tmp;
 	tmp.push_back(ch);
 	texts[current_line_index]->text.insert(current_char_index, tmp);
 
 	current_char_index++;
 	cursor.pos.x += cache_font_width_norm * 2.0f;
+	thin_cursor.pos.x += cache_font_width_norm * 2.0f;
 }
 
 void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
@@ -242,7 +273,7 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	this->font_name = font_name;
 	this->font_size = font_size;
 
-	mode = Mode::EDIT;
+	mode = Mode::ESC;
 
 	text_gap_x_norm = text_gap_x_org / (float)scr_width;
 	text_gap_y_norm = text_gap_y_org / (float)scr_height;
@@ -310,6 +341,13 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	cursor.x_scale = cache_font_width_norm;
 	cursor.y_scale = cache_font_height_norm * 2.0f;
 	cursor.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	thin_cursor.init();
+	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
+	thin_cursor.pos.y = box.pos.y + box.y_scale - text_gap_y_norm - cache_font_height_norm;
+	thin_cursor.y_scale = cache_font_height_norm * 2.0f;
+	thin_cursor.x_scale = 0.002f;
+	thin_cursor.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void NewTextBox::go_next_char()
@@ -319,6 +357,7 @@ void NewTextBox::go_next_char()
 
 	current_char_index++;
 	cursor.pos.x += cache_font_width_norm * 2.0f;	
+	thin_cursor.pos.x += cache_font_width_norm * 2.0f;	
 }
 
 void NewTextBox::go_prev_char()
@@ -328,6 +367,7 @@ void NewTextBox::go_prev_char()
 
 	current_char_index--;
 	cursor.pos.x -= cache_font_width_norm * 2.0f;	
+	thin_cursor.pos.x -= cache_font_width_norm * 2.0f;	
 }
 
 void NewTextBox::go_next_line()
@@ -337,6 +377,7 @@ void NewTextBox::go_next_line()
 
 	if(current_page_line_index >= max_lines_per_page - 1)
 	{
+		std::cout << "Scrolling down" << std::endl;
 		scroll_down();
 		return;
 	}
@@ -348,6 +389,7 @@ void NewTextBox::go_next_line()
 		set_char_max();
 
 	cursor.pos.y -= next_y_norm;
+	thin_cursor.pos.y -= next_y_norm;
 }
 
 void NewTextBox::go_prev_line()
@@ -355,11 +397,12 @@ void NewTextBox::go_prev_line()
 	if(current_line_index == 0)
 		return;
 
-	if(current_page_line_index > 0)
+	if(current_page_line_index >= 0)
 		current_page_line_index--;
 	else
 	{
 		current_page_line_index = 0;
+		std::cout << "Scrolling up" << std::endl;
 		scroll_up();
 		return;
 	}
@@ -369,13 +412,15 @@ void NewTextBox::go_prev_line()
 		set_char_max();
 
 	cursor.pos.y += next_y_norm;
+	thin_cursor.pos.y += next_y_norm;
 }
 
 void NewTextBox::set_char_max()
 {
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
-	current_char_index = 0;
+	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
 
+	current_char_index = 0;
 	unsigned int _sz = texts[current_line_index]->text.size();
 	for(unsigned int i = 0; i < _sz; i++)
 		go_next_char();	
@@ -426,9 +471,13 @@ void NewTextBox::add_text(std::string text)
 void NewTextBox::draw()
 {
 	box.draw();
-	cursor.draw();
 	left_indent_bar.draw();
 	cmd_bar.draw();
+
+	if(mode == Mode::ESC)
+		cursor.draw();
+	else
+		thin_cursor.draw();
 
 	for(unsigned int i = 0; i < page.size(); i++)
 	{

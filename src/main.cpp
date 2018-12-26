@@ -118,24 +118,29 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 {
 	int right_state, left_state, up_state, down_state;
 	int erase_state, return_state, esc_state;
+	int i_state;
 
-	right_state = glfwGetKey(window, GLFW_KEY_RIGHT);
-	left_state = glfwGetKey(window, GLFW_KEY_LEFT);
-	up_state = glfwGetKey(window, GLFW_KEY_UP);
-	down_state = glfwGetKey(window, GLFW_KEY_DOWN);
+	right_state = glfwGetKey(window, GLFW_KEY_L);
+	left_state = glfwGetKey(window, GLFW_KEY_H);
+	up_state = glfwGetKey(window, GLFW_KEY_K);
+	down_state = glfwGetKey(window, GLFW_KEY_J);
 	erase_state = glfwGetKey(window, GLFW_KEY_BACKSPACE);
 	return_state = glfwGetKey(window, GLFW_KEY_ENTER);
 	esc_state = glfwGetKey(window, GLFW_KEY_ESCAPE);
 
-	if(right_state == GLFW_PRESS)
-		ntb.go_next_char();
-	else if(left_state == GLFW_PRESS)
-		ntb.go_prev_char();
-	else if(up_state == GLFW_PRESS)
-		ntb.go_prev_line();
-	else if(down_state == GLFW_PRESS)
-		ntb.go_next_line();
-	else if(esc_state == GLFW_PRESS)
+	if(ntb.mode == Mode::ESC)
+	{
+		if(right_state == GLFW_PRESS)
+			ntb.go_next_char();
+		else if(left_state == GLFW_PRESS)
+			ntb.go_prev_char();
+		else if(up_state == GLFW_PRESS)
+			ntb.go_prev_line();
+		else if(down_state == GLFW_PRESS)
+			ntb.go_next_line();
+	}
+
+	if(esc_state == GLFW_PRESS)
 		ntb.goto_esc_mode();
 	else if(return_state == GLFW_PRESS)
 		ntb.add_new_line();
