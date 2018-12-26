@@ -110,10 +110,6 @@ void NewTextBox::erase()
 
 void NewTextBox::add_new_line()
 {
-	if(mode == Mode::ESC)
-		return;
-
-	// Insert a blank line below current_line_index
 	Text *t = new Text;
 	t->text = "";
 	t->font.init_lib();
@@ -122,32 +118,61 @@ void NewTextBox::add_new_line()
 	t->font.init_font(t->text, font_name, font_size);
 	t->pos.x = up_left_org.x - box_dims_org.x + text_gap_x_org + left_indent_bar.x_scale * scr_width;
 
-	std::vector<Text*>::iterator it = texts.begin();
-	texts.insert(it + current_line_index + 1, t);
-
-	std::deque<Text*>::iterator it_2 = page.begin();
-	if(texts.size() - 1 >= max_lines_per_page)
-		page.pop_back();
-	page.insert(it_2 + current_page_line_index + 1, t);
-
 	float gap = next_y_norm * scr_height / 2.0f;
-	unsigned int tmp_li = current_line_index + 1;
-	t->pos.y = texts[current_line_index]->pos.y;
-	t->pos.y -= gap;
 
-	current_line_index += 2;
-	for(unsigned int i = current_line_index; i < texts.size(); i++)
-		texts[i]->pos.y -= gap;
+	if(current_page_line_index == max_lines_per_page - 1)
+	{
+		page.pop_front();
 
-	current_line_index = tmp_li;
-	cursor.pos.y -= next_y_norm;
-	thin_cursor.pos.y -= next_y_norm;
-	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
-	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
-	current_char_index = 0;
+		float start_y = up_left_org.y + box_dims_org.y;
+		start_y -= font_size;
+		float gap = next_y_norm * scr_height / 2.0f;
 
-	if(current_page_line_index < max_lines_per_page - 1)
-		current_page_line_index++;
+		for(unsigned int i = 0; i < page.size(); i++)
+		{
+			Text *ft = page[i];
+			ft->pos.y = start_y;	
+
+			start_y -= gap;
+		}
+
+		current_line_index++;
+		texts.push_back(t);
+		page.push_back(t);
+
+		t->pos.y = texts[current_line_index - 1]->pos.y;
+		t->pos.y -= gap;
+	}
+	else
+	{
+		std::vector<Text*>::iterator it = texts.begin();
+		texts.insert(it + current_line_index + 1, t);
+
+		std::deque<Text*>::iterator it_2 = page.begin();
+		if(texts.size() - 1 >= max_lines_per_page)
+			page.pop_back();
+		page.insert(it_2 + current_page_line_index + 1, t);
+
+		unsigned int tmp_li = current_line_index + 1;
+		t->pos.y = texts[current_line_index]->pos.y;
+		t->pos.y -= gap;
+
+		current_line_index += 2;
+		for(unsigned int i = current_line_index; i < texts.size(); i++)
+		{
+			texts[i]->pos.y -= gap;
+		}
+
+		current_line_index = tmp_li;
+		cursor.pos.y -= next_y_norm;
+		thin_cursor.pos.y -= next_y_norm;
+		cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
+		thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
+		current_char_index = 0;
+
+		if(current_page_line_index < max_lines_per_page - 1)
+			current_page_line_index++;
+	}
 }
 
 void NewTextBox::scroll_down()
@@ -466,6 +491,7 @@ void NewTextBox::add_text(std::string text)
 		tmp *= 2.0f;
 
 		max_lines_per_page = (unsigned int)tmp;
+		std::cout << "max: " << max_lines_per_page << std::endl;
 	}
 }
 

@@ -110,7 +110,7 @@ void update()
 	else if(mouse_clicked && load_btn.rect.is_on(mouse_x, mouse_y))
 	{
 		load_btn.rect.push();	
-		ntb.load("sample_c++.cpp");
+		ntb.load("demo.txt");
 	}
 }
 
@@ -118,7 +118,6 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 {
 	int right_state, left_state, up_state, down_state;
 	int erase_state, return_state, esc_state;
-	int i_state;
 
 	right_state = glfwGetKey(window, GLFW_KEY_L);
 	left_state = glfwGetKey(window, GLFW_KEY_H);
