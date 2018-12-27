@@ -30,7 +30,36 @@ struct TextBox
 	void check_and_toggle_is_active(float x_norm, float y_norm);
 	std::string check_and_get_str(float x_norm, float y_norm);
 	void erase();
+	void set_x(float norm_x, unsigned int scr_width);
+	void set_y(float norm_y, unsigned int scr_height);
 };
+
+void TextBox::set_x(float norm_x, unsigned int scr_width)
+{
+	outer_panel.pos.x = norm_x;
+	inner_panel.pos.x = outer_panel.pos.x;
+
+	cursor.pos.x = inner_panel.pos.x - inner_panel.x_scale + 4 * cursor.x_scale;
+
+	btn.set_x(outer_panel.pos.x + outer_panel.x_scale + btn.rect.x_scale, scr_width);
+	
+	text_pos.x = get_org_x(cursor.pos.x, scr_width);
+}
+
+void TextBox::set_y(float norm_y, unsigned int scr_height)
+{
+	outer_panel.pos.y = norm_y;
+	inner_panel.pos.y = outer_panel.pos.y;
+	cursor.pos.y = inner_panel.pos.y;
+	btn.set_y(cursor.pos.y, scr_height);
+
+	float ty = get_org_y(cursor.pos.y, scr_height);
+	if(ty < 0)
+		ty = abs(ty);
+	else
+		ty = ty + (scr_height / 2.0f);
+	text_pos.y = ty - text.get_height(str) / 2.0f;
+}
 
 void TextBox::init(unsigned int scr_width, unsigned int scr_height)
 {
@@ -41,7 +70,7 @@ void TextBox::init(unsigned int scr_width, unsigned int scr_height)
 
 	inner_panel.init();
 	inner_panel.x_scale = outer_panel.x_scale / 1.1f;
-   inner_panel.y_scale = outer_panel.y_scale / 1.1f;
+	inner_panel.y_scale = outer_panel.y_scale / 1.1f;
 	inner_panel.color = glm::vec4(0.5, 0.5f, 0.5f, 1.0f);
 
 	cursor.init();

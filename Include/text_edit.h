@@ -45,6 +45,10 @@ struct TextEdit
 	int current_char_index = 0;
 	int current_page_line_index = 0;
 
+	Text is_active_text;
+	bool is_active = false;
+	std::string is_active_str = "Not Active";
+
 	unsigned int font_size;
 	unsigned int scr_width = 0;
 	unsigned int scr_height = 0;
@@ -58,6 +62,7 @@ struct TextEdit
 	float next_y_norm = 0;
 
 	std::string font_name;
+	std::string filename;
 
 	void init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h);
 	void draw();
@@ -68,8 +73,8 @@ struct TextEdit
 	void go_prev_line();
 	void set_char_max();
 	void insert(char ch);
-	void save(std::string f_name);
-	void load(std::string f_name);
+	void save();
+	void load();
 	void scroll_down();
 	void scroll_up();
 	void add_new_line();
@@ -77,7 +82,20 @@ struct TextEdit
 	void goto_esc_mode();
 	void goto_edit_mode();
 	void erase_line();
+	void check_and_toggle_is_active(float x_norm, float y_norm);
 };
+
+void TextEdit::check_and_toggle_is_active(float x_norm, float y_norm)
+{
+	if(box.is_on(x_norm, y_norm))
+	{
+		is_active = !is_active;
+		if(is_active)
+			is_active_str = "Active";
+		else
+			is_active_str = "Not Active";
+	}
+}
 
 void TextEdit::erase_line()
 {
@@ -236,12 +254,12 @@ void TextEdit::scroll_up()
 	}
 }
 
-void TextEdit::save(std::string f_name)
+void TextEdit::save()
 {
-	std::ofstream wr(f_name);
+	std::ofstream wr(filename);
 	if(!wr)
 	{
-		std::cout << "Cannot open file: " << f_name << " for writing" << std::endl;
+		std::cout << "Cannot open file: " << filename << " for writing" << std::endl;
 		return;
 	}
 
@@ -252,17 +270,17 @@ void TextEdit::save(std::string f_name)
 			wr << "\n";
 	}
 
-	std::cout << "saved: " << f_name << std::endl;
+	std::cout << "saved: " << filename << std::endl;
 	wr.close();
 }
 
-void TextEdit::load(std::string f_name)
+void TextEdit::load()
 {
 	std::ifstream read;
-	read.open(f_name);
+	read.open(filename);
 	if(!read)
 	{
-		std::cout << "Could not open file: " << f_name << " for reading" << std::endl;
+		std::cout << "Could not open file: " << filename << " for reading" << std::endl;
 		return;
 	}
 
@@ -284,7 +302,7 @@ void TextEdit::load(std::string f_name)
 		}
 	}
 
-	std::cout << "loaded: " << f_name << std::endl;
+	std::cout << "loaded: " << filename << std::endl;
 	read.close();
 }
 
@@ -375,6 +393,20 @@ void TextEdit::init(std::string font_name, unsigned int font_size, unsigned int 
 	else
 		tmp_mode_text_y = tmp_mode_text_y + (scr_height / 2.0f);
 	mode_text.pos.y = tmp_mode_text_y - mode_text.font.get_height(mode_text_str) / 2.0f;
+
+	is_active_str = "Not Active";
+	is_active_text.font.init_lib();
+	is_active_text.font.init_program(scr_width, scr_height);
+	is_active_text.font.make_buffer();
+	is_active_text.font.init_font(mode_text_str, font_name, font_size);
+
+	is_active_text.pos.x = get_org_x(cmd_bar.pos.x + cmd_bar.x_scale, scr_width) - 10.0f * mode_text.font.get_width(mode_text_str);
+	float tmp_is_active_text_y = get_org_y(cmd_bar.pos.y, scr_height);
+	if(tmp_is_active_text_y < 0)
+		tmp_is_active_text_y = abs(tmp_is_active_text_y);
+	else
+		tmp_is_active_text_y = tmp_is_active_text_y + (scr_height / 2.0f);
+	is_active_text.pos.y = tmp_is_active_text_y - is_active_text.font.get_height(is_active_str) / 2.0f;
 
 	cursor.init();
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
@@ -528,6 +560,8 @@ void TextEdit::draw()
 	}
 
 	mode_text.font.render_text(mode_text_str, mode_text.pos.x, mode_text.pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	is_active_text.font.render_text(is_active_str, is_active_text.pos.x, is_active_text.pos.y, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 #endif
