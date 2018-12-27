@@ -29,6 +29,7 @@ struct TextBox
 	void insert(char ch);
 	void check_and_toggle_is_active(float x_norm, float y_norm);
 	std::string check_and_get_str(float x_norm, float y_norm);
+	void erase();
 };
 
 void TextBox::init(unsigned int scr_width, unsigned int scr_height)
@@ -129,6 +130,18 @@ std::string TextBox::check_and_get_str(float x_norm, float y_norm)
 	}
 
 	return s;
+}
+
+void TextBox::erase()
+{
+	if(!is_active)
+		return;
+
+	if(char_index == 0)
+		return;
+
+	str.erase(char_index - 1, 1);
+	go_prev_char();
 }
 
 void TextBox::draw()

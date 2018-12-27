@@ -142,6 +142,8 @@ void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods)
 		tb.go_next_char();
 	else if(left_state == GLFW_PRESS)
 		tb.go_prev_char();
+	else if(erase_state == GLFW_PRESS)
+		tb.erase();
 
 	/*
 		if(ntb.mode == Mode::ESC)
