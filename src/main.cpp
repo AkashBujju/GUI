@@ -9,7 +9,7 @@
 #include <shader.h>
 #include <init.h>
 #include <button.h>
-#include <new_textbox.h>
+#include <text_box.h>
 
 void key_callback(GLFWwindow *win, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -25,7 +25,7 @@ GLFWwindow *window = nullptr;
 
 // DropDown d;
 Button save_btn, load_btn;
-NewTextBox ntb;
+TextEdit ntb;
 
 int main()
 {

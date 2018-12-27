@@ -1,6 +1,6 @@
 /* A redo of text_box.h */
-#ifndef NEW_TEXTBOX_H
-#define NEW_TEXTBOX_H
+#ifndef MY_TEXTEDIT_H
+#define MY_TEXTEDIT_H
 
 #include <iostream>
 #include <vector>
@@ -24,7 +24,7 @@ struct Text
 	glm::vec2 pos;
 };
 
-struct NewTextBox
+struct TextEdit
 {
 	Rect box;
 	Rect cursor;
@@ -79,7 +79,7 @@ struct NewTextBox
 	void erase_line();
 };
 
-void NewTextBox::erase_line()
+void TextEdit::erase_line()
 {
 	std::vector<Text*>::iterator it = texts.begin();
 	texts.erase(it + current_line_index);
@@ -97,19 +97,19 @@ void NewTextBox::erase_line()
 	}
 }
 
-void NewTextBox::goto_edit_mode()
+void TextEdit::goto_edit_mode()
 {
 	mode = Mode::EDIT;
 	mode_text_str = "EDIT";
 }
 
-void NewTextBox::goto_esc_mode()
+void TextEdit::goto_esc_mode()
 {
 	mode = Mode::ESC;
 	mode_text_str = "ESC";
 }
 
-void NewTextBox::erase()
+void TextEdit::erase()
 {
 	if(mode == Mode::ESC)
 		return;
@@ -121,7 +121,7 @@ void NewTextBox::erase()
 	go_prev_char();
 }
 
-void NewTextBox::add_new_line()
+void TextEdit::add_new_line()
 {
 	Text *t = new Text;
 	t->text = "";
@@ -188,7 +188,7 @@ void NewTextBox::add_new_line()
 	}
 }
 
-void NewTextBox::scroll_down()
+void TextEdit::scroll_down()
 {
 	page.pop_front();
 	current_line_index++;
@@ -212,7 +212,7 @@ void NewTextBox::scroll_down()
 	}
 }
 
-void NewTextBox::scroll_up()
+void TextEdit::scroll_up()
 {
 	page.pop_back();
 	current_line_index--;
@@ -236,7 +236,7 @@ void NewTextBox::scroll_up()
 	}
 }
 
-void NewTextBox::save(std::string f_name)
+void TextEdit::save(std::string f_name)
 {
 	std::ofstream wr(f_name);
 	if(!wr)
@@ -256,7 +256,7 @@ void NewTextBox::save(std::string f_name)
 	wr.close();
 }
 
-void NewTextBox::load(std::string f_name)
+void TextEdit::load(std::string f_name)
 {
 	std::ifstream read;
 	read.open(f_name);
@@ -288,7 +288,7 @@ void NewTextBox::load(std::string f_name)
 	read.close();
 }
 
-void NewTextBox::insert(char ch)
+void TextEdit::insert(char ch)
 {
 	if(mode == Mode::ESC)
 	{
@@ -306,7 +306,7 @@ void NewTextBox::insert(char ch)
 	thin_cursor.pos.x += cache_font_width_norm * 2.0f;
 }
 
-void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
+void TextEdit::init(std::string font_name, unsigned int font_size, unsigned int w, unsigned int h)
 {
 	scr_width = w;
 	scr_height = h;
@@ -394,7 +394,7 @@ void NewTextBox::init(std::string font_name, unsigned int font_size, unsigned in
 	add_text("");
 }
 
-void NewTextBox::go_next_char()
+void TextEdit::go_next_char()
 {
 	if(current_char_index == texts[current_line_index]->text.size())
 		return;
@@ -404,7 +404,7 @@ void NewTextBox::go_next_char()
 	thin_cursor.pos.x += cache_font_width_norm * 2.0f;	
 }
 
-void NewTextBox::go_prev_char()
+void TextEdit::go_prev_char()
 {
 	if(current_char_index == 0)
 		return;
@@ -414,7 +414,7 @@ void NewTextBox::go_prev_char()
 	thin_cursor.pos.x -= cache_font_width_norm * 2.0f;	
 }
 
-void NewTextBox::go_next_line()
+void TextEdit::go_next_line()
 {
 	if(current_line_index == texts.size() - 1)
 		return;
@@ -435,7 +435,7 @@ void NewTextBox::go_next_line()
 	thin_cursor.pos.y -= next_y_norm;
 }
 
-void NewTextBox::go_prev_line()
+void TextEdit::go_prev_line()
 {
 	if(current_line_index == 0)
 		return;
@@ -457,7 +457,7 @@ void NewTextBox::go_prev_line()
 	thin_cursor.pos.y += next_y_norm;
 }
 
-void NewTextBox::set_char_max()
+void TextEdit::set_char_max()
 {
 	cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f;
 	thin_cursor.pos.x = box.pos.x - box.x_scale + 2.0f * text_gap_x_norm + cache_font_width_norm + left_indent_bar.x_scale * 2.0f - cache_font_width_norm;
@@ -468,7 +468,7 @@ void NewTextBox::set_char_max()
 		go_next_char();	
 }
 
-void NewTextBox::add_text(std::string text)
+void TextEdit::add_text(std::string text)
 {
 	Text *t = new Text;
 	t->text = text;
@@ -511,7 +511,7 @@ void NewTextBox::add_text(std::string text)
 	}
 }
 
-void NewTextBox::draw()
+void TextEdit::draw()
 {
 	box.draw();
 	left_indent_bar.draw();
